@@ -9,6 +9,8 @@ import {
   type ErrorInfo,
   type ReactNode,
 } from 'react'
+import Link from 'next/link'
+import { usePathname, useSearchParams } from 'next/navigation'
 import useSWR from 'swr'
 import {
   CompareLayout,
@@ -123,9 +125,6 @@ function AnalyzerFallback({ view }: { view: CompareView }) {
 }
 
 function useAnalyzerModel(compare: boolean) {
-  const [environmentFilter, setEnvironmentFilter] = useState<Environment>(
-    Environment.Client
-  )
   const [typeFilter, setTypeFilter] = useState(['js', 'css', 'json'])
   const [selectedSourceIndex, setSelectedSourceIndex] = useState<number | null>(
     null
@@ -136,8 +135,13 @@ function useAnalyzerModel(compare: boolean) {
 
   const { data: history, isLoading: isHistoryLoading } = useHistoryIndex()
   const routeState = useAnalyzerRoute(compare, history?.snapshots)
-  const { baselineSnapshot, comparisonSnapshot, compareView, selectedRoute } =
-    routeState
+  const {
+    baselineSnapshot,
+    comparisonSnapshot,
+    compareView,
+    environmentFilter,
+    selectedRoute,
+  } = routeState
   const [pendingView, setPendingView] = useState<CompareView | null>(null)
 
   useEffect(() => {
@@ -308,7 +312,7 @@ function useAnalyzerModel(compare: boolean) {
       setPendingView(view)
       routeState.setView(view)
     },
-    setEnvironmentFilter,
+    setEnvironmentFilter: routeState.setEnvironmentFilter,
     setFocusedSourceIndex,
     setHoveredNodeInfo,
     setIsMouseInTreemap,
@@ -627,14 +631,7 @@ function SingleAnalyzerContent({
     model.typeFilter
   )
   const alternateEnvironmentEmptyState = hasAlternateEnvironmentSources ? (
-    <AlternateEnvironmentEmptyState
-      environment={model.environmentFilter}
-      onSwitch={() =>
-        model.setEnvironmentFilter(
-          getAlternateEnvironment(model.environmentFilter)
-        )
-      }
-    />
+    <AlternateEnvironmentEmptyState environment={model.environmentFilter} />
   ) : undefined
 
   return (
@@ -729,26 +726,30 @@ function getAlternateEnvironment(environment: Environment): Environment {
 
 export function AlternateEnvironmentEmptyState({
   environment,
-  onSwitch,
 }: {
   environment: Environment
-  onSwitch: () => void
 }) {
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const currentLabel = environment === Environment.Client ? 'client' : 'server'
   const alternateLabel =
     environment === Environment.Client ? 'server' : 'client'
+  const nextSearchParams = new URLSearchParams(searchParams.toString())
+  nextSearchParams.set('environment', alternateLabel)
+  const href = `${pathname}?${nextSearchParams.toString()}`
+
   return (
-    <>
+    <span>
       This route has no {currentLabel} sources matching the active file types.{' '}
-      <button
-        type="button"
+      <Link
+        href={href}
+        replace
         className="font-medium text-foreground underline underline-offset-4 hover:text-primary"
-        onClick={onSwitch}
       >
         Show {alternateLabel} sources
-      </button>
+      </Link>
       .
-    </>
+    </span>
   )
 }
 

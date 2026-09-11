@@ -1,4 +1,4 @@
-import { CompareView } from '@/components/top-bar'
+import { CompareView, Environment } from '@/components/top-bar'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import type { SnapshotMetadata } from './snapshot'
 
@@ -26,6 +26,10 @@ export function useAnalyzerRoute(
       : compare
         ? CompareView.Table
         : CompareView.Treemap
+  const environmentFilter =
+    searchParams.get('environment') === Environment.Server
+      ? Environment.Server
+      : Environment.Client
 
   function navigate(
     nextPathname: string,
@@ -45,8 +49,11 @@ export function useAnalyzerRoute(
     baselineSnapshot,
     comparisonSnapshot,
     compareView,
+    environmentFilter,
     selectedRoute,
     setView: (view: CompareView) => navigate(pathname, { view }, 'replace'),
+    setEnvironmentFilter: (environment: Environment) =>
+      navigate(pathname, { environment }, 'replace'),
     setRoute: (route: string | null) =>
       navigate(pathname, { route }, 'replace'),
     startComparison: (snapshot: SnapshotMetadata) =>
