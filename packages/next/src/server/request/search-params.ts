@@ -2,7 +2,7 @@ import {
   workAsyncStorage,
   type WorkStore,
 } from '../app-render/work-async-storage.external'
-import type { VaryParamsAccumulator } from '../app-render/vary-params'
+import type { SetLedger } from '../app-render/ledgers'
 import {
   createVaryingSearchParams,
   getMetadataVaryParamsAccumulator,
@@ -110,7 +110,7 @@ export function createServerSearchParamsForMetadata(
 
 export function createServerSearchParamsForServerPage(
   underlyingSearchParams: SearchParams,
-  varyParamsAccumulator: VaryParamsAccumulator | null
+  varyParamsAccumulator: SetLedger<string> | null
 ): Promise<SearchParams> {
   const workStore = workAsyncStorage.getStore()
   if (!workStore) {
@@ -237,7 +237,7 @@ function createRuntimePrerenderSearchParams(
   underlyingSearchParams: SearchParams,
   workStore: WorkStore,
   workUnitStore: PrerenderStoreModernRuntime,
-  varyParamsAccumulator: VaryParamsAccumulator | null
+  varyParamsAccumulator: SetLedger<string> | null
 ): Promise<SearchParams> {
   const userspaceSearchParams =
     varyParamsAccumulator !== null

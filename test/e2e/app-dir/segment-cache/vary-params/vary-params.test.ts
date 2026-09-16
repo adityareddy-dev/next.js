@@ -822,4 +822,92 @@ describe('segment cache - vary params', () => {
       { includes: 'Root param page content - param: bbb' }
     )
   })
+
+  // @gate ledgers
+  it('tracks root params separately for sibling segments', async () => {
+    let act: ReturnType<typeof createRouterAct>
+    const browser = await next.browser('/scoped-root-params/es/contoso', {
+      beforePageLoad(page: Playwright.Page) {
+        act = createRouterAct(page)
+      },
+    })
+
+    // The page reads locale; the sidebar reads tenant. Prefetch two routes
+    // so the cache has both values of each, in different combinations.
+    await act(async () => {
+      const toggle = await browser.elementByCss(
+        'input[data-link-accordion="/scoped-root-params/en/acme"]'
+      )
+      await toggle.click()
+    }, [{ includes: 'Locale: en' }, { includes: 'Tenant: acme' }])
+
+    await act(async () => {
+      const toggle = await browser.elementByCss(
+        'input[data-link-accordion="/scoped-root-params/fr/globex"]'
+      )
+      await toggle.click()
+    }, [{ includes: 'Locale: fr' }, { includes: 'Tenant: globex' }])
+
+    // This combination hasn't been prefetched. Each segment can be reused
+    // because it only depends on its own root param. Page-wide attribution
+    // would make both segments vary on both params and require another fetch.
+    await act(async () => {
+      const toggle = await browser.elementByCss(
+        'input[data-link-accordion="/scoped-root-params/en/globex"]'
+      )
+      await toggle.click()
+      const link = await browser.elementByCss(
+        'a[href="/scoped-root-params/en/globex"]'
+      )
+      await link.click()
+    }, 'no-requests')
+
+    expect(await browser.elementByCss('main').text()).toBe('Locale: en')
+    expect(await browser.elementByCss('aside').text()).toBe('Tenant: globex')
+  })
+
+  // @gate ledgers
+  it('tracks root params separately for metadata and the page body', async () => {
+    let act: ReturnType<typeof createRouterAct>
+    const browser = await next.browser(
+      '/scoped-root-params/es/contoso/metadata',
+      {
+        beforePageLoad(page: Playwright.Page) {
+          act = createRouterAct(page)
+        },
+      }
+    )
+
+    // The title reads tenant; the body reads locale. Warm both captures
+    // using different combinations of the two params.
+    await act(async () => {
+      const toggle = await browser.elementByCss(
+        'input[data-link-accordion="/scoped-root-params/en/acme/metadata"]'
+      )
+      await toggle.click()
+    }, [{ includes: 'Tenant: acme' }, { includes: 'Locale: en' }])
+
+    await act(async () => {
+      const toggle = await browser.elementByCss(
+        'input[data-link-accordion="/scoped-root-params/fr/globex/metadata"]'
+      )
+      await toggle.click()
+    }, [{ includes: 'Tenant: globex' }, { includes: 'Locale: fr' }])
+
+    // Reuse the title from the second route and the body from the first.
+    // Neither capture should inherit the other one's param dependency.
+    await act(async () => {
+      const toggle = await browser.elementByCss(
+        'input[data-link-accordion="/scoped-root-params/en/globex/metadata"]'
+      )
+      await toggle.click()
+      const link = await browser.elementByCss(
+        'a[href="/scoped-root-params/en/globex/metadata"]'
+      )
+      await link.click()
+    }, 'no-requests')
+
+    expect(await browser.eval('document.title')).toBe('Tenant: globex')
+    expect(await browser.elementByCss('main').text()).toBe('Locale: en')
+  })
 })
