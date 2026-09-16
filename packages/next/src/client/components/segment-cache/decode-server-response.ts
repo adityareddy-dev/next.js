@@ -5,7 +5,8 @@
  * downstream operates on RouteTree / NavigationSeed / CacheNode.
  */
 
-import type { SetLedgerValue } from '../../../shared/lib/ledger-decoding'
+import { type SetLedgerValue, readMinLedger } from '../../../shared/lib/ledger-decoding'
+import { STATIC_STALETIME_MS } from '../router-reducer/reducers/navigate-reducer'
 import type {
   FlightRouterState,
   HeadData,
@@ -82,7 +83,7 @@ export type NavigationSeed = {
   headVaryParams: VaryParams | null
   /**
    * The head's own staleTime in seconds, when the response carries one
-   * (per-segment prefetch responses only — see TransportSegmentData['s']).
+   * (see TransportSegmentData['s']).
    * Null means the response-level staleness governs the head.
    */
   headStaleTimeSeconds: number | null
@@ -197,10 +198,19 @@ export function createNavigationSeed(
             : transportHead.p
           : readFulfilledIsPartial(transportHead.p)
       headVaryParams = readVaryParams(transportHead.v, rootVaryParams)
-      headStaleTimeSeconds =
-        transportHead.s !== undefined
-          ? readFulfilledStaleTimeSeconds(transportHead.s)
-          : null
+      if (transportHead.s !== undefined) {
+        // A pending total keeps the response-level fallback. Only a fulfilled
+        // empty capture uses the segment's default stale time.
+        const value = readMinLedger(transportHead.s, null)
+        if (value !== null) {
+          headStaleTimeSeconds =
+            value === undefined || isNaN(value)
+              ? process.env.__NEXT_LEDGERS
+                ? STATIC_STALETIME_MS / 1000
+                : null
+              : value
+        }
+      }
     }
   } else {
     if (currentTree === null) {
@@ -629,6 +639,18 @@ function decodeTransportNode(
   }
 
   if (nodeData !== undefined) {
+    let staleTimeSeconds: number | null = null
+    if (nodeData.s !== undefined) {
+      const value = readMinLedger(nodeData.s, null)
+      if (value !== null) {
+        staleTimeSeconds =
+          value === undefined || isNaN(value)
+            ? process.env.__NEXT_LEDGERS
+              ? STATIC_STALETIME_MS / 1000
+              : null
+            : value
+      }
+    }
     tree.data = {
       rsc: nodeData.r,
       // The wire form of `p` determines which signal is authoritative for
@@ -660,12 +682,7 @@ function decodeTransportNode(
       // above; skipped entirely (decoded as null, "unknown") when the caller
       // passed no root params — see createNavigationSeed.
       varyParams: readVaryParams(nodeData.v, rootVaryParams),
-      // Per-node staleTime, only present in per-segment prefetch responses
-      // (same buffered-read reasoning as `p` above).
-      staleTimeSeconds:
-        nodeData.s !== undefined
-          ? readFulfilledStaleTimeSeconds(nodeData.s)
-          : null,
+      staleTimeSeconds,
     }
   }
 

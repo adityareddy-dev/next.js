@@ -787,9 +787,11 @@ async function generateDynamicRSCPayload(
 
     if (responseTree !== null) {
       const headVaryParams = getMetadataVaryParamsAccumulator()
+      const headStore = workUnitAsyncStorage.getStore()
       const capturedHead = process.env.__NEXT_LEDGERS
         ? ctx.componentMod.captureLedgers(responseTree.head, [
             ctx.componentMod.VaryParamsLedger,
+            ctx.componentMod.StaleTimeLedger,
           ])
         : null
       transportData = {
@@ -803,6 +805,12 @@ async function generateDynamicRSCPayload(
               : capturedHead !== null
                 ? capturedHead.ledgers[0]
                 : (getLedgerValue(headVaryParams) ?? null),
+          s:
+            headStore &&
+            'staleTimeAccumulator' in headStore &&
+            headStore.staleTimeAccumulator !== undefined
+              ? capturedHead?.ledgers[1]
+              : undefined,
         },
       }
     }
@@ -1106,6 +1114,8 @@ async function generateStagedDynamicFlightRenderResultNode(
     requestStore.mutableCookies,
     requestStore.headers
   )
+
+  requestStore.staleTimeAccumulator = ctx.componentMod.StaleTimeLedger
   trackStaleTime(
     requestStore as { stale: number },
     staleTimeIterable,
@@ -1899,6 +1909,7 @@ async function finalRuntimeServerPrerender(
     revalidate: 1,
     expire: 0,
     stale: INFINITE_CACHE,
+    staleTimeAccumulator: ctx.componentMod.StaleTimeLedger,
     tags: [...implicitTags.tags],
     resumeDataCache,
     hmrRefreshHash: undefined,
@@ -2274,9 +2285,11 @@ async function getRSCPayload(
   const isPossiblyPartialHead = ctx.renderCapabilities.isPossiblyPartialResponse
 
   const headVaryParams = getMetadataVaryParamsAccumulator()
+  const headStore = workUnitAsyncStorage.getStore()
   const capturedHead = process.env.__NEXT_LEDGERS
     ? ctx.componentMod.captureLedgers(initialHead, [
         ctx.componentMod.VaryParamsLedger,
+        ctx.componentMod.StaleTimeLedger,
       ])
     : null
 
@@ -2299,6 +2312,12 @@ async function getRSCPayload(
             : capturedHead !== null
               ? capturedHead.ledgers[0]
               : (getLedgerValue(headVaryParams) ?? null),
+        s:
+          headStore &&
+          'staleTimeAccumulator' in headStore &&
+          headStore.staleTimeAccumulator !== undefined
+            ? capturedHead?.ledgers[1]
+            : undefined,
       },
     },
     m: missingSlots,
@@ -2439,9 +2458,11 @@ async function getErrorRSCPayload(
   const isPossiblyPartialHead = ctx.renderCapabilities.isPossiblyPartialResponse
 
   const headVaryParams = getMetadataVaryParamsAccumulator()
+  const headStore = workUnitAsyncStorage.getStore()
   const capturedHead = process.env.__NEXT_LEDGERS
     ? ctx.componentMod.captureLedgers(initialHead, [
         ctx.componentMod.VaryParamsLedger,
+        ctx.componentMod.StaleTimeLedger,
       ])
     : null
 
@@ -2461,6 +2482,12 @@ async function getErrorRSCPayload(
             : capturedHead !== null
               ? capturedHead.ledgers[0]
               : (getLedgerValue(headVaryParams) ?? null),
+        s:
+          headStore &&
+          'staleTimeAccumulator' in headStore &&
+          headStore.staleTimeAccumulator !== undefined
+            ? capturedHead?.ledgers[1]
+            : undefined,
       },
     },
     G: [GlobalError, globalErrorStyles],
@@ -3905,6 +3932,8 @@ async function renderToStream(
         requestStore.varyParamsAccumulator = createResponseVaryParamsTarget(
           ctx.componentMod.VaryParamsLedger
         )
+
+        requestStore.staleTimeAccumulator = ctx.componentMod.StaleTimeLedger
         trackStaleTime(
           requestStore as { stale: number },
           staleTimeIterable,
@@ -9202,6 +9231,7 @@ async function prerenderToStream(
         revalidate: INFINITE_CACHE,
         expire: INFINITE_CACHE,
         stale: INFINITE_CACHE,
+        staleTimeAccumulator: ctx.componentMod.StaleTimeLedger,
         tags: [...implicitTags.tags],
         resumeDataCache,
         hmrRefreshHash: undefined,
@@ -9258,6 +9288,7 @@ async function prerenderToStream(
         revalidate: INFINITE_CACHE,
         expire: INFINITE_CACHE,
         stale: INFINITE_CACHE,
+        staleTimeAccumulator: ctx.componentMod.StaleTimeLedger,
         tags: [...implicitTags.tags],
         resumeDataCache,
         hmrRefreshHash: undefined,
