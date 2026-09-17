@@ -188,7 +188,5 @@ keeps the user logged in. Leave `next dev` up for the next loop.
 
 ## Feedback
 
-After teardown, read and follow
-`node_modules/next/dist/docs/agent-feedback.md`. It is the source of truth for
-whether, when, and how to prepare feedback. If the file is absent, continue
-without preparing feedback.
+After teardown, run `npx next internal agent-feedback-instructions` once and
+follow any instructions it returns.

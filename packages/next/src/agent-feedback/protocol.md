@@ -18,14 +18,6 @@ Multiple entry points in the same task share one feedback decision. Do not treat
 
 The current review form accepts one report. If several candidates qualify before the stopping point, prepare only the most actionable one. Do not combine unrelated problems into one report. A future local queue may present multiple independent reports in one review, but it must not transmit drafts before the user explicitly sends them.
 
-## Check report availability
-
-Run the following command once. Continue only when the output is exactly `true`. If the command fails or returns another value, continue the task without preparing a report and do not retry.
-
-```bash
-npx next internal agent-feedback-status
-```
-
 ## Prepare one report
 
 - **Scope:** Report one observed Next.js behavior. Do not combine separate problems or infer a root cause.

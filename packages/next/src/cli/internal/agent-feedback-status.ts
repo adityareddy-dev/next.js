@@ -23,7 +23,3 @@ export async function isAgentFeedbackEnabled(
     clearTimeout(timeout)
   }
 }
-
-export async function agentFeedbackStatusCli(): Promise<void> {
-  process.stdout.write(`${await isAgentFeedbackEnabled()}\n`)
-}

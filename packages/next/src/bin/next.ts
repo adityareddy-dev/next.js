@@ -650,10 +650,10 @@ const internal = program
   )
 
 internal
-  .command('agent-feedback-status', { hidden: true })
+  .command('agent-feedback-instructions', { hidden: true })
   .action(() =>
-    import('../cli/internal/agent-feedback-status.js').then((mod) =>
-      mod.agentFeedbackStatusCli()
+    import('../cli/internal/agent-feedback-instructions.js').then((mod) =>
+      mod.agentFeedbackInstructionsCli()
     )
   )
 
