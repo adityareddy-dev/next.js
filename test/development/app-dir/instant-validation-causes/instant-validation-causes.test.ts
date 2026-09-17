@@ -3,18 +3,13 @@ import { retry } from 'next-test-utils'
 import type { ValidationEvent } from 'next/dist/server/app-render/dev-validation-events'
 
 describe('instant validation causes', () => {
-  const { next, skipped, isNextDev } = nextTestSetup({
+  const { next } = nextTestSetup({
     files: __dirname,
-    skipDeployment: true,
+
     env: {
       NEXT_TEST_LOG_VALIDATION: '1',
     },
   })
-  if (skipped) return
-  if (!isNextDev) {
-    it.skip('Only implemented in dev', () => {})
-    return
-  }
 
   let currentCliOutputIndex = 0
   beforeEach(() => {

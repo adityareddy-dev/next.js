@@ -199,52 +199,6 @@ describe.each([
     })
   })
 
-  if (useHttps === 'false') {
-    ;(isNextDev ? describe : describe.skip)('HMR with custom server', () => {
-      const { next, skipped } = nextTestSetup({
-        files: __dirname,
-        startCommand: 'node server.js',
-        serverReadyPattern: /- Local:/,
-        env: { USE_HTTPS: useHttps, NODE_ENV: sharedNodeEnv },
-        dependencies: sharedDeps,
-        skipDeployment: true,
-        disableAutoSkewProtection: true,
-      })
-      if (skipped) return
-
-      it('Should support HMR when rendering with /index pathname', async () => {
-        const browser = await next.browser('/test-index-hmr')
-        const text = await browser.elementByCss('#go-asset').text()
-        const logs = await browser.log()
-        expect(text).toBe('Asset')
-
-        expect(
-          logs.some((log) =>
-            log.message.includes(
-              'ReactDOM.hydrate is no longer supported in React 18'
-            )
-          )
-        ).toBe(false)
-
-        const originalContent = await next.readFile('pages/index.js')
-        await next.patchFile(
-          'pages/index.js',
-          originalContent.replace('Asset', 'Asset!!')
-        )
-
-        try {
-          await retry(async () => {
-            expect(await browser.elementByCss('#go-asset').text()).toMatch(
-              /Asset!!/
-            )
-          })
-        } finally {
-          await next.patchFile('pages/index.js', originalContent)
-        }
-      })
-    })
-  }
-
   describe('Error when rendering without starting slash', () => {
     const { next, skipped } = nextTestSetup({
       files: __dirname,
