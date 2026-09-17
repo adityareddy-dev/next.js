@@ -93,7 +93,16 @@ When enabled and an AI coding agent is detected, `next dev` adds a separate mana
 
 # Report Next.js feedback
 
-As you work, retain de-identified Next.js friction candidates in the current task context. Do not interrupt the task to report them or retain source code, logs, file paths, URLs, secrets, personal information, or project-specific data.
+As you work, keep track of de-identified Next.js issues that cause a meaningful detour or are likely to recur, including:
+
+- A dev server, build, or runtime crash, hang, out-of-memory failure, or unexpected slowdown
+- Incorrect or inconsistent framework behavior or output
+- Missing, unclear, or conflicting documentation
+- A misleading error or missing diagnostic
+- A Next.js CLI, codemod, Skill, or upgrade workflow that behaves unexpectedly
+- Repeated failed approaches or a non-obvious workaround
+
+Do not interrupt the task to report an issue. Ignore routine first-pass debugging and issues caused by unverified changes. Do not retain source code, logs, file paths, URLs, secrets, personal information, or project-specific data.
 
 At the final stopping point of the overall user task, run `npx next internal agent-feedback-instructions` once unless it has already run in this task. Follow any instructions it returns; if it returns nothing, continue without reporting.
 

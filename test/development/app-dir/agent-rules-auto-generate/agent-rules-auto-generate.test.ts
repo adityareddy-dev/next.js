@@ -224,9 +224,11 @@ describe('agent-feedback auto-generate on next dev (enabled)', () => {
     )
     expect(content).toContain(AGENT_RULES_MARKER)
     expect(content).toContain(AGENT_FEEDBACK_MARKER)
+    expect(content).toContain('meaningful detour or are likely to recur')
     expect(content).toContain(
-      'retain de-identified Next.js friction candidates'
+      'crash, hang, out-of-memory failure, or unexpected slowdown'
     )
+    expect(content).toContain('CLI, codemod, Skill, or upgrade workflow')
     expect(content).toContain('npx next internal agent-feedback-instructions')
     expect(content).toContain('once unless it has already run in this task')
     expect(content).not.toContain('"schemaVersion":3')
