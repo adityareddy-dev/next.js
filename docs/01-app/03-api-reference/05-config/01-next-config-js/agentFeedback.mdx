@@ -32,9 +32,25 @@ const nextConfig = {
 module.exports = nextConfig
 ```
 
+## Generated agent instructions
+
+When the option is enabled and `next dev` detects an AI coding agent, Next.js creates or updates this managed block in `AGENTS.md` or `CLAUDE.md`:
+
+```md filename="AGENTS.md"
+<!-- BEGIN:nextjs-agent-feedback -->
+
+# Report Next.js feedback
+
+At a natural stopping point, run `npx next internal agent-feedback-instructions` once and follow any instructions it returns.
+
+<!-- END:nextjs-agent-feedback -->
+```
+
+Next.js updates only the content between the feedback markers and preserves the rest of the file. When agent rules and agent feedback are both enabled, Next.js keeps both managed blocks in the same file.
+
 ## Review and send agent feedback
 
-When `next dev` detects an AI coding agent, Next.js adds managed feedback instructions to your project's `AGENTS.md` or `CLAUDE.md`. The agent can then load reporting instructions that match the installed Next.js version.
+The generated block lets the agent load reporting instructions that match the installed Next.js version.
 
 Each draft contains a generic setup, reproduction steps, observed facts, an expected result, and an optional control or workaround.
 
