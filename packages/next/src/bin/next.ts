@@ -650,6 +650,14 @@ const internal = program
   )
 
 internal
+  .command('agent-feedback-status', { hidden: true })
+  .action(() =>
+    import('../cli/internal/agent-feedback-status.js').then((mod) =>
+      mod.agentFeedbackStatusCli()
+    )
+  )
+
+internal
   .command('trace')
   .alias('turbo-trace-server')
   .argument('file', 'Trace file to serve.')

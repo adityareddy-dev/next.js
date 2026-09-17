@@ -20,10 +20,10 @@ The current review form accepts one report. If several candidates qualify before
 
 ## Check report availability
 
-This endpoint is the remote kill switch shared by every entry point. Run the following command once. Continue only when the output is exactly `true`. If the request fails or returns another value, continue the task without preparing a report and do not retry.
+Run the following command once. Continue only when the output is exactly `true`. If the command fails or returns another value, continue the task without preparing a report and do not retry.
 
 ```bash
-curl -fsS --max-time 5 https://next-agent-feedback-gate.playground-vercel.tools/api/enabled
+npx next internal agent-feedback-status
 ```
 
 ## Prepare one report
