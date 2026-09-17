@@ -36,6 +36,8 @@ module.exports = nextConfig
 
 When `next dev` detects an AI coding agent, Next.js adds managed feedback instructions to your project's `AGENTS.md` or `CLAUDE.md`. The agent can then load reporting instructions that match the installed Next.js version.
 
+Each draft contains a generic setup, reproduction steps, observed facts, an expected result, and an optional control or workaround.
+
 When an agent identifies a reproducible Next.js issue, it can open a draft report in a review form. You can edit the report, remove details, close the form without sending, or select **Send feedback**. Nothing is sent when the form opens.
 
 Submitting the form sends the content you reviewed, the agent name, and the Next.js version. The form does not automatically attach project files or machine metadata.

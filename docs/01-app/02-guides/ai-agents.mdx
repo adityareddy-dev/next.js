@@ -94,15 +94,9 @@ const nextConfig: NextConfig = {
 export default nextConfig
 ```
 
-### Opting in to agent feedback
+### Agent feedback
 
-The experimental [`agentFeedback`](/docs/app/api-reference/config/next-config-js/agentFeedback) option is an opt-in feedback flow for AI coding agents. It is off by default and separate from [Next.js Telemetry](/telemetry). Changing either setting does not affect the other.
-
-When enabled, `agentFeedback` adds a separate managed block that lets detected AI coding agents prepare de-identified reports about reproducible Next.js issues.
-
-Each report contains a generic setup, reproduction steps, observed facts, an expected result, and an optional control or workaround.
-
-Nothing is sent automatically. You can edit the report, remove individual details, or close it without sending. The agent cannot submit a report on your behalf.
+The experimental [`agentFeedback`](/docs/app/api-reference/config/next-config-js/agentFeedback) option lets detected AI coding agents prepare Next.js issue reports for your review. It is off by default and separate from [Next.js Telemetry](/telemetry).
 
 ```ts filename="next.config.ts"
 import type { NextConfig } from 'next'
@@ -116,7 +110,7 @@ const nextConfig: NextConfig = {
 export default nextConfig
 ```
 
-The option works independently of `agentRules`. Turning it off removes only the managed agent-feedback block the next time `next dev` runs.
+Nothing is sent when a report opens. You can edit or remove details, close the form without sending, or send the reviewed report.
 
 ### For earlier versions
 
