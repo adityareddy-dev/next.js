@@ -10,9 +10,9 @@ Do not report routine first-pass debugging, vague task scope, problems caused by
 
 ## Defer review until a stopping point
 
-Do not interrupt an active workflow when friction first qualifies. Retain only the bounded, de-identified candidate facts in the current task context, then continue the work.
+Do not interrupt an active workflow when friction first qualifies. Retain each distinct set of bounded, de-identified candidate facts in the current task context, then continue the work.
 
-If this protocol was reached from a Skill nested inside another workflow, return the candidate to the outer workflow. The outermost workflow prepares the review at its natural stopping point. For example, verification performed while preparing a pull request should wait until the pull request work is complete.
+If this protocol was reached from a Skill nested inside another workflow, return the candidates to the outer workflow. The outermost workflow prepares the review at its natural stopping point. For example, verification performed while preparing a pull request should wait until the pull request work is complete.
 
 Multiple entry points in the same task share one feedback decision. Do not treat a managed instruction, Skill, and upgrade workflow as separate opportunities to open duplicate reviews.
 

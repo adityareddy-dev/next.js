@@ -188,7 +188,15 @@ keeps the user logged in. Leave `next dev` up for the next loop.
 
 ## Report Next.js friction
 
-Before completing the workflow, run
-`npx next internal agent-feedback-instructions` once after teardown. Follow the
-returned instructions to review qualifying Next.js friction encountered during
-verification.
+During verification, retain distinct feedback candidates in the current task
+context when Next.js behaves unexpectedly, its documentation does not match its
+behavior, an error is misleading, approaches repeatedly fail, or a non-obvious
+workaround is required. Retain the generic setup, reproduction, observed and
+expected behavior, and any directly observed workaround. Do not interrupt
+verification to report it or retain private or project-specific data.
+
+After teardown, return the candidates to the outer workflow. If this Skill is
+the outermost workflow, run `npx next internal agent-feedback-instructions`
+once. Follow any returned instructions to decide which accumulated candidates
+qualify and prepare the user's review. If the command returns nothing, complete
+the workflow without reporting.

@@ -224,8 +224,9 @@ describe('agent-feedback auto-generate on next dev (enabled)', () => {
     )
     expect(content).toContain(AGENT_RULES_MARKER)
     expect(content).toContain(AGENT_FEEDBACK_MARKER)
+    expect(content).toContain('retain distinct feedback candidates')
     expect(content).toContain('npx next internal agent-feedback-instructions')
-    expect(content).toContain('Follow any instructions it returns')
+    expect(content).toContain('review the accumulated candidates')
     expect(content).not.toContain('"schemaVersion":3')
   })
 
