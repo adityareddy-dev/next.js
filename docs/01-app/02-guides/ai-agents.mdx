@@ -80,9 +80,11 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 Add your own project-specific instructions outside the `<!-- BEGIN:nextjs-agent-rules -->` and `<!-- END:nextjs-agent-rules -->` markers, and they're preserved when Next.js updates the managed block.
 
-### Opting out
+### Agent rules
 
-We believe leaving auto-generation on is a good default. [Benchmark results on nextjs.org/evals](https://nextjs.org/evals) show agents do better when they read the bundled docs. If you really want to opt out, set `agentRules` to `false` in your config:
+The `agentRules` option controls whether `next dev` creates and updates the managed agent instructions above. It is enabled by default. [Benchmark results on nextjs.org/evals](https://nextjs.org/evals) show that agents perform better when they read the bundled docs.
+
+Set `agentRules` to `false` to disable generation:
 
 ```ts filename="next.config.ts"
 import type { NextConfig } from 'next'
@@ -98,18 +100,6 @@ export default nextConfig
 
 The experimental [`agentFeedback`](/docs/app/api-reference/config/next-config-js/agentFeedback) option lets detected AI coding agents prepare Next.js issue reports for your review. It is off by default and separate from [Next.js Telemetry](/telemetry).
 
-```ts filename="next.config.ts"
-import type { NextConfig } from 'next'
-
-const nextConfig: NextConfig = {
-  experimental: {
-    agentFeedback: true,
-  },
-}
-
-export default nextConfig
-```
-
 When enabled and an AI coding agent is detected, `next dev` adds a separate managed block to `AGENTS.md` or `CLAUDE.md`:
 
 ```md filename="AGENTS.md"
@@ -124,9 +114,7 @@ At the final stopping point of the overall user task, run `npx next internal age
 <!-- END:nextjs-agent-feedback -->
 ```
 
-The managed block tells the agent to retain potential Next.js friction during the task. At the final stopping point, the command checks whether reporting is available and returns the version-matched instructions for deciding whether the friction qualifies and, if so, structuring one report. The command runs at most once per task, including when a Next.js Skill also applies.
-
-Nothing is sent when a report opens. You can edit or remove details, close the form without sending, or send the reviewed report.
+Next.js preserves content outside the managed block. When an agent prepares a report, it opens in a review form. Nothing is sent until you select **Send feedback**. You can edit or remove details, or close the form without sending.
 
 ### For earlier versions
 
