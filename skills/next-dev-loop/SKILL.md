@@ -186,7 +186,9 @@ Close the session with the same session and restore context:
 that session's cookies and storage so the next loop's `--restore` open
 keeps the user logged in. Leave `next dev` up for the next loop.
 
-## Feedback
+## Report Next.js friction
 
-After teardown, run `npx next internal agent-feedback-instructions` once and
-follow any instructions it returns.
+Before completing the workflow, run
+`npx next internal agent-feedback-instructions` once after teardown. Follow the
+returned instructions to review qualifying Next.js friction encountered during
+verification.
