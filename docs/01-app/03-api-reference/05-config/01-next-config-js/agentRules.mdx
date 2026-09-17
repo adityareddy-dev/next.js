@@ -58,7 +58,7 @@ If either file already exists, Next.js adds the managed block to that file witho
 
 ## Disable agent rules
 
-Set `agentRules` to `false` to stop `next dev` from creating or updating the managed block. The next `next dev` run removes the existing agent rules block and preserves all other content, even when no agent is detected. A file that contained only the managed block is deleted; any other `AGENTS.md` or `CLAUDE.md` content is kept.
+Set `agentRules` to `false` to stop `next dev` from creating or updating the managed block. The next `next dev` run removes the existing agent rules block and preserves all other content, even when no agent is detected. If the file contained only the managed block, Next.js deletes the file instead of leaving it empty.
 
 To prevent [`create-next-app`](/docs/app/api-reference/cli/create-next-app) from creating agent files in a new project, pass the `--no-agents-md` option.
 

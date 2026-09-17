@@ -84,7 +84,7 @@ Next.js updates only the content between the agent rules markers and preserves t
 
 ### Automatic agent feedback
 
-Automatic agent feedback is experimental and off by default. Enable it with [`experimental.agentFeedback`](/docs/app/api-reference/config/next-config-js/agentFeedback) in `next.config`. When enabled, it lets coding agents retain de-identified Next.js issues without interrupting an active task. At a natural stopping point, the agent prepares each qualifying issue as a separate report and opens it for your review. You can edit or remove details, close the form, or choose to send the report. Nothing is sent when the form opens, and agent feedback is separate from [Next.js Telemetry](/telemetry).
+Automatic agent feedback is experimental and disabled by default. Enable it with [`experimental.agentFeedback`](/docs/app/api-reference/config/next-config-js/agentFeedback) in `next.config`. When enabled, coding agents retain de-identified Next.js issues without interrupting an active task. At a natural stopping point, the agent prepares each qualifying issue as a separate report and opens it for your review. You can edit or remove details, close the form, or choose to send the report. Nothing is sent when the form opens, and agent feedback is separate from [Next.js Telemetry](/telemetry).
 
 With the option enabled, `next dev` adds the following managed feedback instructions to the agent file when it detects an AI coding agent:
 

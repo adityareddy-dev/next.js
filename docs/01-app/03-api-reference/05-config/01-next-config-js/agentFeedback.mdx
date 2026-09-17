@@ -80,7 +80,7 @@ Submitting the form sends the content you reviewed, the agent name, and the Next
 
 ## Disable agent feedback
 
-Set `experimental.agentFeedback` to `false` or remove the option to stop `next dev` from creating or updating the managed block. The next `next dev` run removes the existing agent feedback block and preserves all other content. A file that contained only the managed block is deleted; any other `AGENTS.md` or `CLAUDE.md` content is kept.
+Set `experimental.agentFeedback` to `false` or remove the option to stop `next dev` from creating or updating the managed block. The next `next dev` run removes the existing agent feedback block and preserves all other content. If the file contained only the managed block, Next.js deletes the file instead of leaving it empty.
 
 `experimental.agentFeedback` and top-level [`agentRules`](/docs/app/api-reference/config/next-config-js/agentRules) work independently. Changing one option does not affect the other.
 
