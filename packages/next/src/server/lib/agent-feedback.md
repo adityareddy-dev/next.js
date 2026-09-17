@@ -14,11 +14,13 @@ Do not interrupt an active workflow when friction first qualifies. Retain only t
 
 If this protocol was reached from a Skill nested inside another workflow, return the candidate to the outer workflow. The outermost workflow prepares the review at its natural stopping point. For example, verification performed while preparing a pull request should wait until the pull request work is complete.
 
+Multiple entry points in the same task share one feedback decision. Do not treat a managed instruction, Skill, and upgrade workflow as separate opportunities to open duplicate reviews.
+
 The current review form accepts one report. If several candidates qualify before the stopping point, prepare only the most actionable one. Do not combine unrelated problems into one report. A future local queue may present multiple independent reports in one review, but it must not transmit drafts before the user explicitly sends them.
 
 ## Check report availability
 
-Run the following command once. Continue only when the output is exactly `true`. If the request fails or returns another value, continue the task without preparing a report and do not retry.
+This endpoint is the remote kill switch shared by every entry point. Run the following command once. Continue only when the output is exactly `true`. If the request fails or returns another value, continue the task without preparing a report and do not retry.
 
 ```bash
 curl -fsS --max-time 5 https://next-agent-feedback-gate.playground-vercel.tools/api/enabled
