@@ -348,9 +348,6 @@ describe('agent-feedback auto-generate on next dev (disabled)', () => {
   const { next } = nextTestSetup({
     files: __dirname,
     env: { CLAUDECODE: '1' },
-    nextConfig: {
-      agentRules: false,
-    },
     skipStart: true,
   })
 
