@@ -1,7 +1,7 @@
 ---
-title: How to set up your Next.js project for AI coding agents
+title: How Next.js supports AI coding agents
 nav_title: AI Coding Agents
-description: Learn how to configure your Next.js project so AI coding agents use up-to-date documentation instead of outdated training data.
+description: Learn how Next.js provides AI coding agents with version-matched documentation, runtime tools, reusable workflows, and automatic feedback.
 related:
   title: Next Steps
   links:
@@ -11,7 +11,7 @@ related:
     - app/api-reference/cli/next
 ---
 
-Next.js ships version-matched documentation inside the `next` package, allowing AI coding agents to reference accurate, up-to-date APIs and patterns. An `AGENTS.md` file at the root of your project directs agents to these bundled docs instead of their training data.
+Next.js provides AI coding agents with version-matched documentation, runtime visibility, structured errors, reusable workflows, and automatic feedback. These capabilities help agents use the APIs and patterns supported by your installed Next.js version, verify their work, and report framework friction for your review.
 
 Point agents at the bundled docs, give them [runtime visibility](#step-2-give-agents-runtime-visibility) into the dev server, let [errors drive the fixes](#step-3-let-errors-drive-the-fixes), and hand multi-step workflows to [skills](#step-4-hand-multi-step-workflows-to-skills).
 
@@ -58,9 +58,9 @@ If you don't want the agent files, pass `--no-agents-md`:
 npx create-next-app@canary --no-agents-md
 ```
 
-### Agent rules
+### Version-matched documentation
 
-[`agentRules`](/docs/app/api-reference/config/next-config-js/agentRules) keeps AI coding agents aligned with your installed Next.js version by directing them to the bundled docs. Next.js writes the following managed instructions to `AGENTS.md` or `CLAUDE.md` at the project root:
+Next.js keeps AI coding agents aligned with your installed framework version by adding managed instructions that direct them to the bundled docs. The instructions appear in `AGENTS.md` or `CLAUDE.md` at the project root:
 
 ```md filename="AGENTS.md"
 <!-- BEGIN:nextjs-agent-rules -->
@@ -78,15 +78,15 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 @AGENTS.md
 ```
 
-Next.js updates only the content between the agent rules markers and preserves the rest of the file. The option is enabled by default on Next.js 16.3 or later. Set `agentRules` to `false` to remove the managed block the next time you run `next dev`.
+Next.js updates only the content between the agent rules markers and preserves the rest of the file.
 
-[Benchmark results on nextjs.org/evals](https://nextjs.org/evals) show that agents perform better when they read the bundled docs. See the [`agentRules` API reference](/docs/app/api-reference/config/next-config-js/agentRules) to disable generated instructions.
+[Benchmark results on nextjs.org/evals](https://nextjs.org/evals) show that agents perform better when they read the bundled docs. See the [`agentRules` API reference](/docs/app/api-reference/config/next-config-js/agentRules) to configure the managed instructions.
 
-### Agent feedback
+### Automatic agent feedback
 
-Agent feedback lets AI coding agents keep track of de-identified Next.js issues while they work and prepare them for your review at the end of the task. Each report opens in a review form where you can edit or remove details before choosing whether to send it. Agent feedback is separate from [Next.js Telemetry](/telemetry).
+Automatic agent feedback lets coding agents retain de-identified Next.js issues without interrupting an active task. At a natural stopping point, the agent prepares each qualifying issue as a separate report and opens it for your review. You can edit or remove details, close the form, or choose to send the report. Nothing is sent when the form opens, and agent feedback is separate from [Next.js Telemetry](/telemetry).
 
-The feedback instructions use a separate managed block:
+Next.js adds the following managed feedback instructions to the agent file:
 
 ```md filename="AGENTS.md"
 <!-- BEGIN:nextjs-agent-feedback -->
@@ -107,7 +107,7 @@ At the final stopping point, run `npx next internal agent-feedback-instructions`
 <!-- END:nextjs-agent-feedback -->
 ```
 
-Next.js updates only the content between the agent feedback markers and preserves the rest of the file. Disabling or removing `experimental.agentFeedback` removes the existing feedback block the next time you run `next dev`.
+Next.js updates only the content between the agent feedback markers and preserves the rest of the file. See the [`agentFeedback` API reference](/docs/app/api-reference/config/next-config-js/agentFeedback) to configure automatic agent feedback.
 
 ### For earlier versions
 
