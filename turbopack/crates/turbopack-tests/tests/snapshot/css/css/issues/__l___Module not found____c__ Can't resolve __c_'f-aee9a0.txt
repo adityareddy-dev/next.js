@@ -1,0 +1,26 @@
+error - [resolve] /turbopack/crates/turbopack-tests/tests/snapshot/css/css/input/index.js:7:29  Module not found: Can't resolve 'foo'
+  
+       3 | import './style.css'
+       4 | import fooStyle from 'foo/style.module.css'
+       5 | import style from './style.module.css'
+       6 | 
+         +                              v-----------v
+       7 + console.log(style, fooStyle, import('foo'))
+         +                              ^-----------^
+       8 | 
+  
+  Symlink node_modules could not be resolved: the symlink target leaves the filesystem root or its parent directory could not be resolved
+  
+  Debug info:
+  - Execution of <ModuleAssetContext as AssetContext>::resolve_asset failed
+  - Execution of resolve failed
+  - Execution of resolve_internal failed
+  - Execution of find_package failed
+  - Symlink node_modules could not be resolved: the symlink target leaves the filesystem root or its parent directory could not be resolved
+  
+  
+  | An error happened during resolving.
+  | Parsed request as written in source code: module "'foo'"
+  | Path where resolving has started: [project]/turbopack/crates/turbopack-tests/tests/snapshot/css/css/input/index.js
+  | Type of request: EcmaScript Modules request
+  |

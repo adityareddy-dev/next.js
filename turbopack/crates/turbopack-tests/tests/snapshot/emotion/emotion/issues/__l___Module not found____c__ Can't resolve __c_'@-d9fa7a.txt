@@ -1,0 +1,28 @@
+error - [resolve] /turbopack/crates/turbopack-tests/tests/snapshot/emotion/emotion/input/index.js:4:0  Module not found: Can't resolve '@emotion/styled'
+  
+       1 | /** @jsxImportSource @emotion/react */
+       2 | 
+       3 | import { jsx } from '@emotion/react'
+         + v----------------------------------v
+       4 + import styled from '@emotion/styled'
+         + ^----------------------------------^
+       5 | 
+       6 | const StyledButton = styled.button`
+       7 |   background: blue;
+       8 | `
+  
+  Symlink node_modules could not be resolved: the symlink target leaves the filesystem root or its parent directory could not be resolved
+  
+  Debug info:
+  - Execution of <ModuleAssetContext as AssetContext>::resolve_asset failed
+  - Execution of resolve failed
+  - Execution of resolve_internal failed
+  - Execution of find_package failed
+  - Symlink node_modules could not be resolved: the symlink target leaves the filesystem root or its parent directory could not be resolved
+  
+  
+  | An error happened during resolving.
+  | Parsed request as written in source code: module "'@emotion/styled'"
+  | Path where resolving has started: [project]/turbopack/crates/turbopack-tests/tests/snapshot/emotion/emotion/input/index.js
+  | Type of request: EcmaScript Modules (part) request
+  |

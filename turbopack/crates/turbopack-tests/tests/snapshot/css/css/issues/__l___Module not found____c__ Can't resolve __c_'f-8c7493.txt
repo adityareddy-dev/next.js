@@ -1,0 +1,22 @@
+error - [resolve] /turbopack/crates/turbopack-tests/tests/snapshot/css/css/input/style.module.css  Module not found: Can't resolve 'foo/style.module.css'
+  
+  
+  Symlink node_modules could not be resolved: the symlink target leaves the filesystem root or its parent directory could not be resolved
+  
+  Debug info:
+  - Execution of *<ModuleAssetContext as AssetContext>::process_resolve_result failed
+  - Execution of resolve failed
+  - Execution of resolve_internal failed
+  - Execution of find_package failed
+  - Symlink node_modules could not be resolved: the symlink target leaves the filesystem root or its parent directory could not be resolved
+  
+  
+  | An error happened during resolving.
+  | Parsed request as written in source code: module 'foo' with subpath '/style.module.css'
+  | Path where resolving has started: [project]/turbopack/crates/turbopack-tests/tests/snapshot/css/css/input/style.module.css
+  | Type of request: css request
+  | 
+  Import trace:
+    test:
+      ./turbopack/crates/turbopack-tests/tests/snapshot/css/css/input/style.module.css
+      ./turbopack/crates/turbopack-tests/tests/snapshot/css/css/input/index.js

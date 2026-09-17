@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/turbopack/crates/turbopack-tests/tests/snapshot/basic/export-default/input/index.js"],"sourcesContent":["import value from 'lib'\n\nconsole.log(value)\n"],"names":["console","log","value"],"mappings":";;;;;;AAEAA,QAAQC,GAAG,CAACC"}}]
+}

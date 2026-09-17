@@ -1,0 +1,22 @@
+error - [resolve] /turbopack/crates/turbopack-tests/tests/snapshot/source_maps/react-compiler/input/Component.jsx  Module not found: Can't resolve 'react/compiler-runtime'
+  
+  
+  Symlink node_modules could not be resolved: the symlink target leaves the filesystem root or its parent directory could not be resolved
+  
+  Debug info:
+  - Execution of <ModuleAssetContext as AssetContext>::resolve_asset failed
+  - Execution of resolve failed
+  - Execution of resolve_internal failed
+  - Execution of find_package failed
+  - Symlink node_modules could not be resolved: the symlink target leaves the filesystem root or its parent directory could not be resolved
+  
+  
+  | An error happened during resolving.
+  | Parsed request as written in source code: module 'react' with subpath '/compiler-runtime'
+  | Path where resolving has started: [project]/turbopack/crates/turbopack-tests/tests/snapshot/source_maps/react-compiler/input/Component.jsx
+  | Type of request: EcmaScript Modules (part) request
+  | 
+  Import trace:
+    test:
+      ./turbopack/crates/turbopack-tests/tests/snapshot/source_maps/react-compiler/input/Component.jsx
+      ./turbopack/crates/turbopack-tests/tests/snapshot/source_maps/react-compiler/input/index.js

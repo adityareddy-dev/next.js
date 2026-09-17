@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/turbopack/crates/turbopack-tests/tests/snapshot/css/css/input/index.js"],"sourcesContent":["import 'foo/style.css'\nimport 'foo'\nimport './style.css'\nimport fooStyle from 'foo/style.module.css'\nimport style from './style.module.css'\n\nconsole.log(style, fooStyle, import('foo'))\n"],"names":["console","log","fooStyle"],"mappings":";;;;;;;;;;;;;;;;AAIA;;;;;;AAEAA,QAAQC,GAAG,CAAC,+MAAK,EAAEC"}},
+    {"offset": {"line": 34, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/turbopack/crates/turbopack-tests/tests/snapshot/css/css/input/style.module.css [test] (css module)"],"sourcesContent":["__turbopack_context__.v({\n  \"another-composed-module-style\": \"Iu_hLa_another-composed-module-style\",\n  \"composed-module-style\": \"Iu_hLa_composed-module-style\",\n  \"inner\": \"Iu_hLa_inner\",\n  \"module-style\": \"Iu_hLa_module-style\",\n});\n"],"names":[],"mappings":"AAAA;AACA;AACA;AACA;AACA;AACA"}}]
+}

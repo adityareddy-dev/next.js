@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/turbopack/crates/turbopack-tests/tests/snapshot/intermediate-tree-shake/reexport-with-locals/input/index.js"],"sourcesContent":["import { local, namedFunction, default as defaultFunction } from 'lib'\n\nlocal()\nnamedFunction()\n\ndefaultFunction()\n"],"names":["local","namedFunction","defaultFunction"],"mappings":";;;;;;AAEAA;AACAC;AAEAC"}}]
+}
