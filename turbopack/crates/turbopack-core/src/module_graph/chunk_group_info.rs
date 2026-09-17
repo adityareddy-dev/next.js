@@ -16,6 +16,7 @@ use turbo_tasks::{
     FxIndexMap, FxIndexSet, NonLocalValue, ResolvedVc, TaskInput, TryJoinIterExt, ValueToString,
     Vc, debug::ValueDebugFormat, trace::TraceRawVcs, turbofmt,
 };
+use turbo_tasks_hash::{DeterministicHash, DeterministicHasher};
 
 use crate::{
     chunk::ChunkingType,
@@ -79,6 +80,23 @@ impl Hash for RoaringBitmapWrapper {
                 Ok(())
             }
         }
+        self.0.serialize_into(HasherWriter(state)).unwrap();
+    }
+}
+
+impl DeterministicHash for RoaringBitmapWrapper {
+    fn deterministic_hash<H: DeterministicHasher>(&self, state: &mut H) {
+        struct HasherWriter<'a, H: DeterministicHasher>(&'a mut H);
+        impl<H: DeterministicHasher> std::io::Write for HasherWriter<'_, H> {
+            fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+                self.0.write_bytes(buf);
+                Ok(buf.len())
+            }
+            fn flush(&mut self) -> std::io::Result<()> {
+                Ok(())
+            }
+        }
+        // The serialized form is stable across platforms, unlike the in-memory representation.
         self.0.serialize_into(HasherWriter(state)).unwrap();
     }
 }

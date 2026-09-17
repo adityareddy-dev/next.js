@@ -1,9 +1,0 @@
-error - [resolve] /turbopack/crates/turbopack-tests/tests/snapshot/css/css/input/style.module.css  An issue occurred while resolving a CSS module `composes:` rule
-  
-  Module module 'foo' with subpath '/style.module.css' referenced in `composes: ... from ...;` can't be resolved.
-  
-  
-  Import trace:
-    test:
-      ./turbopack/crates/turbopack-tests/tests/snapshot/css/css/input/style.module.css
-      ./turbopack/crates/turbopack-tests/tests/snapshot/css/css/input/index.js
