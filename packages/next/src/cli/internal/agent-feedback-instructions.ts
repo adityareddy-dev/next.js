@@ -4,7 +4,7 @@ import { isAgentFeedbackEnabled } from './agent-feedback-status'
 
 const AGENT_FEEDBACK_PROTOCOL_PATH = path.join(
   __dirname,
-  '../../docs/agent-feedback.md'
+  '../../agent-feedback/protocol.md'
 )
 
 type IsEnabled = () => Promise<boolean>

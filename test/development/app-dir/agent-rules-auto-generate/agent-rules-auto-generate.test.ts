@@ -7,6 +7,26 @@ import { writeAgentFiles } from 'next/dist/server/lib/generate-agent-files'
 const AGENT_RULES_MARKER = '<!-- BEGIN:nextjs-agent-rules -->'
 const AGENT_FEEDBACK_MARKER = '<!-- BEGIN:nextjs-agent-feedback -->'
 
+/** Clears every variable `@vercel/detect-agent` inspects so no agent is detected. */
+const NO_AGENT_ENV = {
+  AI_AGENT: '',
+  CURSOR_TRACE_ID: '',
+  CURSOR_AGENT: '',
+  GEMINI_CLI: '',
+  CODEX_SANDBOX: '',
+  CODEX_CI: '',
+  CODEX_THREAD_ID: '',
+  ANTIGRAVITY_AGENT: '',
+  AUGMENT_AGENT: '',
+  OPENCODE_CLIENT: '',
+  CLAUDECODE: '',
+  CLAUDE_CODE: '',
+  REPL_ID: '',
+  COPILOT_MODEL: '',
+  COPILOT_ALLOW_ALL: '',
+  COPILOT_GITHUB_TOKEN: '',
+}
+
 /**
  * The canonical block as the version under test generates it,
  * obtained by running the real generator into a temp dir — the test
@@ -18,7 +38,8 @@ function currentAgentRulesBlock(): string {
   return fs.readFileSync(path.join(dir, 'AGENTS.md'), 'utf-8').trimEnd()
 }
 
-function currentAgentFeedbackBlock(): string {
+/** A feedback block from an older version, used to check refresh and removal. */
+function staleAgentFeedbackBlock(): string {
   return `${AGENT_FEEDBACK_MARKER}
 stale feedback instructions
 <!-- END:nextjs-agent-feedback -->`
@@ -58,24 +79,7 @@ describe('agent-rules auto-generate on next dev (no agent)', () => {
     // Explicitly clear every env var the agent detector inspects so the
     // test doesn't inherit one from the host shell (e.g. running it
     // inside Claude Code would otherwise trigger generation).
-    env: {
-      AI_AGENT: '',
-      CURSOR_TRACE_ID: '',
-      CURSOR_AGENT: '',
-      GEMINI_CLI: '',
-      CODEX_SANDBOX: '',
-      CODEX_CI: '',
-      CODEX_THREAD_ID: '',
-      ANTIGRAVITY_AGENT: '',
-      AUGMENT_AGENT: '',
-      OPENCODE_CLIENT: '',
-      CLAUDECODE: '',
-      CLAUDE_CODE: '',
-      REPL_ID: '',
-      COPILOT_MODEL: '',
-      COPILOT_ALLOW_ALL: '',
-      COPILOT_GITHUB_TOKEN: '',
-    },
+    env: NO_AGENT_ENV,
   })
 
   it('does not create AGENTS.md or CLAUDE.md when no agent is detected', async () => {
@@ -311,24 +315,7 @@ describe('agent-feedback auto-generate on next dev (stale CLAUDE.md block)', () 
 describe('agent-feedback auto-generate on next dev (no agent)', () => {
   const { next } = nextTestSetup({
     files: __dirname,
-    env: {
-      AI_AGENT: '',
-      CURSOR_TRACE_ID: '',
-      CURSOR_AGENT: '',
-      GEMINI_CLI: '',
-      CODEX_SANDBOX: '',
-      CODEX_CI: '',
-      CODEX_THREAD_ID: '',
-      ANTIGRAVITY_AGENT: '',
-      AUGMENT_AGENT: '',
-      OPENCODE_CLIENT: '',
-      CLAUDECODE: '',
-      CLAUDE_CODE: '',
-      REPL_ID: '',
-      COPILOT_MODEL: '',
-      COPILOT_ALLOW_ALL: '',
-      COPILOT_GITHUB_TOKEN: '',
-    },
+    env: NO_AGENT_ENV,
     nextConfig: {
       agentRules: false,
       experimental: {
@@ -354,7 +341,7 @@ describe('agent-feedback auto-generate on next dev (disabled)', () => {
   beforeAll(async () => {
     await next.patchFile(
       'AGENTS.md',
-      `# Team rules\n\nKeep this content.\n\n${currentAgentRulesBlock()}\n\n${currentAgentFeedbackBlock()}\n`
+      `# Team rules\n\nKeep this content.\n\n${currentAgentRulesBlock()}\n\n${staleAgentFeedbackBlock()}\n`
     )
     await next.start()
   })
@@ -374,24 +361,7 @@ describe('agent-feedback auto-generate on next dev (disabled)', () => {
 describe('agent-rules auto-generate on next dev (disabled with existing blocks)', () => {
   const { next } = nextTestSetup({
     files: __dirname,
-    env: {
-      AI_AGENT: '',
-      CURSOR_TRACE_ID: '',
-      CURSOR_AGENT: '',
-      GEMINI_CLI: '',
-      CODEX_SANDBOX: '',
-      CODEX_CI: '',
-      CODEX_THREAD_ID: '',
-      ANTIGRAVITY_AGENT: '',
-      AUGMENT_AGENT: '',
-      OPENCODE_CLIENT: '',
-      CLAUDECODE: '',
-      CLAUDE_CODE: '',
-      REPL_ID: '',
-      COPILOT_MODEL: '',
-      COPILOT_ALLOW_ALL: '',
-      COPILOT_GITHUB_TOKEN: '',
-    },
+    env: NO_AGENT_ENV,
     nextConfig: {
       agentRules: false,
       experimental: {
@@ -404,13 +374,13 @@ describe('agent-rules auto-generate on next dev (disabled with existing blocks)'
   beforeAll(async () => {
     await next.patchFile(
       'AGENTS.md',
-      `# Team rules\n\nKeep this content.\n\n${currentAgentRulesBlock()}\n\n${currentAgentFeedbackBlock()}\n`
+      `# Team rules\n\nKeep this content.\n\n${currentAgentRulesBlock()}\n\n${staleAgentFeedbackBlock()}\n`
     )
     await next.patchFile('CLAUDE.md', `${currentAgentRulesBlock()}\n`)
     await next.start()
   })
 
-  it('removes only the managed rules block without a detected agent', async () => {
+  it('removes the managed rules block without a detected agent and drops an emptied file', async () => {
     await next.fetch('/')
     const content = fs.readFileSync(
       path.join(next.testDir, 'AGENTS.md'),
@@ -419,9 +389,8 @@ describe('agent-rules auto-generate on next dev (disabled with existing blocks)'
     expect(content).toContain('Keep this content.')
     expect(content).not.toContain(AGENT_RULES_MARKER)
     expect(content).toContain(AGENT_FEEDBACK_MARKER)
-    expect(fs.existsSync(path.join(next.testDir, 'CLAUDE.md'))).toBe(true)
-    expect(fs.readFileSync(path.join(next.testDir, 'CLAUDE.md'), 'utf-8')).toBe(
-      ''
-    )
+    // CLAUDE.md held nothing but the managed block, so it is removed instead
+    // of being left as an empty file.
+    expect(fs.existsSync(path.join(next.testDir, 'CLAUDE.md'))).toBe(false)
   })
 })

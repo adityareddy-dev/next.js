@@ -36,6 +36,12 @@ This block is written and re-added by \`next dev\` — verify at \`node_modules/
 ${AGENT_RULES_END_MARKER}`
 }
 
+/**
+ * The block points agents at `next internal agent-feedback-instructions`.
+ * That command is not covered by semver, which is acceptable here because
+ * `next dev` rewrites this block whenever the installed version changes it,
+ * so a project never keeps an instruction that its own `next` can't serve.
+ */
 function buildAgentFeedbackBlock(): string {
   return `${AGENT_FEEDBACK_START_MARKER}
 
@@ -225,7 +231,10 @@ export function writeAgentFeedbackFiles(projectDir: string): AgentFilesResult {
   return { agentsMd: 'created', claudeMd: 'created' }
 }
 
-/** Remove only the managed agent-feedback block, leaving all other content. */
+/**
+ * Remove only the managed agent-feedback block, leaving all other content.
+ * A file that held nothing but the block is deleted rather than left empty.
+ */
 export function removeAgentFeedbackFiles(projectDir: string): AgentFilesResult {
   return {
     agentsMd: removeManagedBlockFromFile(
@@ -241,7 +250,10 @@ export function removeAgentFeedbackFiles(projectDir: string): AgentFilesResult {
   }
 }
 
-/** Remove only the managed agent-rules block, leaving all other content. */
+/**
+ * Remove only the managed agent-rules block, leaving all other content.
+ * A file that held nothing but the block is deleted rather than left empty.
+ */
 export function removeAgentRulesFiles(projectDir: string): AgentFilesResult {
   return {
     agentsMd: removeManagedBlockFromFile(
@@ -299,7 +311,14 @@ function removeManagedBlockFromFile(
   if (existing === null) return 'skipped'
   const updated = removeManagedBlock(existing, startMarker, endMarker)
   if (updated === existing) return 'unchanged'
-  fs.writeFileSync(filePath, updated, 'utf-8')
+  if (updated.trim() === '') {
+    // Nothing but the managed block lived here, so Next.js effectively owned
+    // the file. Leaving a zero-byte AGENTS.md or CLAUDE.md behind is more
+    // confusing than removing it.
+    fs.unlinkSync(filePath)
+  } else {
+    fs.writeFileSync(filePath, updated, 'utf-8')
+  }
   return 'removed'
 }
 
@@ -379,6 +398,14 @@ function removeManagedBlock(
   while (cutEnd < existing.length && /[\t ]/.test(existing[cutEnd])) cutEnd++
   if (existing[cutEnd] === '\r') cutEnd++
   if (existing[cutEnd] === '\n') cutEnd++
+
+  // A block at the very top has no preceding newline to absorb, so also drop
+  // the blank line that separated it from the content below. Otherwise the
+  // file would start with an empty line.
+  if (cutStart === 0) {
+    if (existing[cutEnd] === '\r') cutEnd++
+    if (existing[cutEnd] === '\n') cutEnd++
+  }
 
   return existing.slice(0, cutStart) + existing.slice(cutEnd)
 }
