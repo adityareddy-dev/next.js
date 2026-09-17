@@ -12,9 +12,9 @@ Do not report routine first-pass debugging, vague task scope, problems caused by
 
 Do not interrupt an active workflow when friction first qualifies. Retain each distinct set of bounded, de-identified candidate facts in the current task context, then continue the work.
 
-If this protocol was reached from a Skill nested inside another workflow, return the candidates to the outer workflow. The outermost workflow prepares the review at its natural stopping point. For example, verification performed while preparing a pull request should wait until the pull request work is complete.
+If this protocol was reached from a Skill inside a larger task, keep the candidates in the current task context and continue the larger task. Prepare the review only at the final stopping point of the overall user task. For example, verification performed while preparing a pull request should wait until the pull request work is complete.
 
-Multiple entry points in the same task share one feedback decision. Do not treat a managed instruction, Skill, and upgrade workflow as separate opportunities to open duplicate reviews.
+Multiple entry points in the same task share one feedback decision. Run the instruction command at most once per task, even when a managed instruction, Skill, and upgrade workflow all apply. Do not open duplicate reviews.
 
 The current review form accepts one report. If several candidates qualify before the stopping point, prepare only the most actionable one. Do not combine unrelated problems into one report. A future local queue may present multiple independent reports in one review, but it must not transmit drafts before the user explicitly sends them.
 

@@ -41,9 +41,9 @@ function buildAgentFeedbackBlock(): string {
 
 # Report Next.js feedback
 
-As you work, retain distinct feedback candidates in the current task context when Next.js behaves unexpectedly, its documentation does not match its behavior, an error is misleading, approaches repeatedly fail, or a non-obvious workaround is required. For each candidate, retain only the generic setup, reproduction, observed and expected behavior, and any directly observed workaround. Do not interrupt the task to report it or retain source code, logs, file paths, URLs, secrets, or personal or project-specific data.
+As you work, retain de-identified Next.js friction candidates in the current task context. Do not interrupt the task to report them or retain source code, logs, file paths, URLs, secrets, personal information, or project-specific data.
 
-At a natural stopping point, run \`npx next internal agent-feedback-instructions\` once. If it returns instructions, follow them to select, structure, and review the accumulated candidates. If it returns nothing, continue without reporting.
+At the final stopping point of the overall user task, run \`npx next internal agent-feedback-instructions\` once unless it has already run in this task. Follow any instructions it returns; if it returns nothing, continue without reporting.
 
 ${AGENT_FEEDBACK_END_MARKER}`
 }
