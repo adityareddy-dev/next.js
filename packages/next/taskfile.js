@@ -45,7 +45,11 @@ export async function copy_docs(task, opts) {
     .target('dist/docs')
 
   await task
-    .source(join(__dirname, 'src/server/lib/agent-feedback.md'))
+    .source(join(__dirname, 'src/agent-feedback/protocol.md'))
+    // eslint-disable-next-line require-yield
+    .run({ every: true }, function* (file) {
+      file.base = 'agent-feedback.md'
+    })
     .target('dist/docs')
 }
 
