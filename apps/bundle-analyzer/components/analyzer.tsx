@@ -493,12 +493,14 @@ function ValidComparisonContent({
     [baselineRouteSummaries]
   )
   const routeDiff = useMemo(() => {
-    return diffRoutesWithSizes(
-      baselineRoutes,
-      model.currentRoutes,
-      baselineRouteTotals,
-      model.currentRouteTotals
-    )
+    return baselineRouteTotals && model.currentRouteTotals
+      ? diffRoutesWithSizes(
+          baselineRoutes,
+          model.currentRoutes,
+          baselineRouteTotals,
+          model.currentRouteTotals
+        )
+      : null
   }, [
     baselineRoutes,
     model.currentRoutes,
