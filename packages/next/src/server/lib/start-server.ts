@@ -26,11 +26,11 @@ import {
   PHASE_DEVELOPMENT_SERVER,
 } from '../../shared/lib/constants'
 import {
-  ensureAgentRulesForDev,
   getEnvInfo,
   logExperimentalInfo,
   logStartInfo,
   syncAgentFeedbackForDev,
+  syncAgentRulesForDev,
 } from './app-info-log'
 import { validateTurboNextConfig } from '../../lib/turbopack-warning'
 import {
@@ -509,28 +509,32 @@ export async function startServer(
             partialPrefetching: initResult.partialPrefetching,
           })
 
-          // Auto-generate AGENTS.md / CLAUDE.md when an AI coding agent
-          // is detected but the managed agent-rules block is missing.
-          // Gated on `agentRules` in next.config (default true).
-          if (initResult.agentRules !== false) {
-            const result = await ensureAgentRulesForDev(dir)
-            if (result) {
-              const generated: string[] = []
-              if (
-                result.agentsMd === 'created' ||
-                result.agentsMd === 'updated'
-              )
-                generated.push('AGENTS.md')
-              if (
-                result.claudeMd === 'created' ||
-                result.claudeMd === 'updated'
-              )
-                generated.push('CLAUDE.md')
-              if (generated.length > 0) {
-                Log.event(
-                  `Generated ${generated.join(' and ')} for AI agents. Set \`agentRules: false\` in next.config to disable.`
-                )
+          const rulesResult = await syncAgentRulesForDev(
+            dir,
+            initResult.agentRules !== false
+          )
+          if (rulesResult) {
+            const generated: string[] = []
+            const removed: string[] = []
+            for (const [file, action] of [
+              ['AGENTS.md', rulesResult.agentsMd],
+              ['CLAUDE.md', rulesResult.claudeMd],
+            ] as const) {
+              if (action === 'created' || action === 'updated') {
+                generated.push(file)
+              } else if (action === 'removed') {
+                removed.push(file)
               }
+            }
+            if (generated.length > 0) {
+              Log.event(
+                `Generated ${generated.join(' and ')} for AI agents. Set \`agentRules: false\` in next.config to disable.`
+              )
+            }
+            if (removed.length > 0) {
+              Log.event(
+                `Removed agent rules from ${removed.join(' and ')} because \`agentRules\` is disabled.`
+              )
             }
           }
 

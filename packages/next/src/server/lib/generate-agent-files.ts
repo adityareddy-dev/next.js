@@ -41,18 +41,16 @@ function buildAgentFeedbackBlock(): string {
 
 # Report Next.js feedback
 
-As you work, keep track of de-identified Next.js issues that cause a meaningful detour or are likely to recur, including:
+During the task, queue de-identified Next.js issues that cause a meaningful detour or are likely to recur, such as:
 
-- A dev server, build, or runtime crash, hang, out-of-memory failure, or unexpected slowdown
-- Incorrect or inconsistent framework behavior or output
+- Crashes, hangs, OOMs, or unexpected slowness in development, builds, or runtime
+- Incorrect behavior or output, misleading errors, or missing diagnostics
 - Missing, unclear, or conflicting documentation
-- A misleading error or missing diagnostic
-- A Next.js CLI, codemod, Skill, or upgrade workflow that behaves unexpectedly
-- Repeated failed approaches or a non-obvious workaround
+- Unexpected CLI, codemod, Skill, or upgrade behavior, repeated failures, or non-obvious workarounds
 
-Do not interrupt the task to report an issue. Ignore routine first-pass debugging and issues caused by unverified changes. Do not retain source code, logs, file paths, URLs, secrets, personal information, or project-specific data.
+Continue the task without reporting immediately. Ignore routine debugging and issues caused by unverified changes. Never retain source code, logs, paths, URLs, secrets, personal information, or project-specific data.
 
-At the final stopping point of the overall user task, run \`npx next internal agent-feedback-instructions\` once unless it has already run in this task. Follow any instructions it returns; if it returns nothing, continue without reporting.
+At the final stopping point, run \`npx next internal agent-feedback-instructions\` once per task and follow any instructions returned. If it returns nothing, continue without reporting.
 
 ${AGENT_FEEDBACK_END_MARKER}`
 }
@@ -230,8 +228,32 @@ export function writeAgentFeedbackFiles(projectDir: string): AgentFilesResult {
 /** Remove only the managed agent-feedback block, leaving all other content. */
 export function removeAgentFeedbackFiles(projectDir: string): AgentFilesResult {
   return {
-    agentsMd: removeFeedbackBlockFromFile(path.join(projectDir, 'AGENTS.md')),
-    claudeMd: removeFeedbackBlockFromFile(path.join(projectDir, 'CLAUDE.md')),
+    agentsMd: removeManagedBlockFromFile(
+      path.join(projectDir, 'AGENTS.md'),
+      AGENT_FEEDBACK_START_MARKER,
+      AGENT_FEEDBACK_END_MARKER
+    ),
+    claudeMd: removeManagedBlockFromFile(
+      path.join(projectDir, 'CLAUDE.md'),
+      AGENT_FEEDBACK_START_MARKER,
+      AGENT_FEEDBACK_END_MARKER
+    ),
+  }
+}
+
+/** Remove only the managed agent-rules block, leaving all other content. */
+export function removeAgentRulesFiles(projectDir: string): AgentFilesResult {
+  return {
+    agentsMd: removeManagedBlockFromFile(
+      path.join(projectDir, 'AGENTS.md'),
+      AGENT_RULES_START_MARKER,
+      AGENT_RULES_END_MARKER
+    ),
+    claudeMd: removeManagedBlockFromFile(
+      path.join(projectDir, 'CLAUDE.md'),
+      AGENT_RULES_START_MARKER,
+      AGENT_RULES_END_MARKER
+    ),
   }
 }
 
@@ -268,14 +290,14 @@ function upsertFeedbackFile(filePath: string, block: string): AgentFileAction {
   return 'updated'
 }
 
-function removeFeedbackBlockFromFile(filePath: string): AgentFileAction {
+function removeManagedBlockFromFile(
+  filePath: string,
+  startMarker: string,
+  endMarker: string
+): AgentFileAction {
   const existing = tryReadFile(filePath)
   if (existing === null) return 'skipped'
-  const updated = removeManagedBlock(
-    existing,
-    AGENT_FEEDBACK_START_MARKER,
-    AGENT_FEEDBACK_END_MARKER
-  )
+  const updated = removeManagedBlock(existing, startMarker, endMarker)
   if (updated === existing) return 'unchanged'
   fs.writeFileSync(filePath, updated, 'utf-8')
   return 'removed'

@@ -188,11 +188,14 @@ keeps the user logged in. Leave `next dev` up for the next loop.
 
 ## Report Next.js friction
 
-Retain de-identified Next.js friction found during verification in the current
-task context. Do not interrupt verification to report it.
+Only participate in agent feedback when managed Next.js feedback instructions
+are already loaded for the project. Their presence means the feature is
+enabled; their absence means it is disabled.
 
-After teardown, carry those candidates into the overall user task. At that
-task's final stopping point, run
-`npx next internal agent-feedback-instructions` once unless another Next.js
-entry point already ran it in this task. Follow any instructions it returns; if
-it returns nothing, complete the task without reporting.
+When enabled, add qualifying de-identified candidates found during verification
+to the shared friction queue in the current task context, then continue
+verification. Do not run the feedback command or open review forms during the
+loop or at this Skill's teardown.
+
+The managed instructions own the single feedback pass at the final stopping
+point of the overall task. If they are absent, do not queue or report feedback.

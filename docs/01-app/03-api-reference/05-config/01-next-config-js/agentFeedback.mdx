@@ -44,18 +44,16 @@ When `experimental.agentFeedback` is enabled and `next dev` detects an AI coding
 
 # Report Next.js feedback
 
-As you work, keep track of de-identified Next.js issues that cause a meaningful detour or are likely to recur, including:
+During the task, queue de-identified Next.js issues that cause a meaningful detour or are likely to recur, such as:
 
-- A dev server, build, or runtime crash, hang, out-of-memory failure, or unexpected slowdown
-- Incorrect or inconsistent framework behavior or output
+- Crashes, hangs, OOMs, or unexpected slowness in development, builds, or runtime
+- Incorrect behavior or output, misleading errors, or missing diagnostics
 - Missing, unclear, or conflicting documentation
-- A misleading error or missing diagnostic
-- A Next.js CLI, codemod, Skill, or upgrade workflow that behaves unexpectedly
-- Repeated failed approaches or a non-obvious workaround
+- Unexpected CLI, codemod, Skill, or upgrade behavior, repeated failures, or non-obvious workarounds
 
-Do not interrupt the task to report an issue. Ignore routine first-pass debugging and issues caused by unverified changes. Do not retain source code, logs, file paths, URLs, secrets, personal information, or project-specific data.
+Continue the task without reporting immediately. Ignore routine debugging and issues caused by unverified changes. Never retain source code, logs, paths, URLs, secrets, personal information, or project-specific data.
 
-At the final stopping point of the overall user task, run `npx next internal agent-feedback-instructions` once unless it has already run in this task. Follow any instructions it returns; if it returns nothing, continue without reporting.
+At the final stopping point, run `npx next internal agent-feedback-instructions` once per task and follow any instructions returned. If it returns nothing, continue without reporting.
 
 <!-- END:nextjs-agent-feedback -->
 ```
@@ -72,17 +70,17 @@ If either file already exists, Next.js adds the managed block to that file witho
 
 ## Review and send agent feedback
 
-The generated instructions let the agent retain potential Next.js friction without interrupting the task and prepare at most one report when the task ends.
+The generated instructions let the agent retain potential Next.js friction without interrupting the task. When the task ends, the agent prepares each distinct qualifying issue as a separate report.
 
 Each draft contains a generic setup, reproduction steps, observed facts, an expected result, and an optional control or workaround.
 
-When an agent identifies a reproducible Next.js issue, it can open a draft report in a review form. You can edit the report, remove details, close the form without sending, or select **Send feedback**. Nothing is sent when the form opens.
+The agent opens each draft in a separate review form. You can edit a report, remove details, close the form without sending, or select **Send feedback**. Nothing is sent when a form opens.
 
 Submitting the form sends the content you reviewed, the agent name, and the Next.js version. The form does not automatically attach project files or machine metadata.
 
 ## Disable agent feedback
 
-Set `experimental.agentFeedback` to `false` or remove the option to stop `next dev` from creating or updating the managed block. The next `next dev` run removes the existing agent feedback block and preserves all other content in `AGENTS.md` and `CLAUDE.md`.
+Set `experimental.agentFeedback` to `false` or remove the option to stop `next dev` from creating or updating the managed block. The next `next dev` run removes the existing agent feedback block and preserves all other content. Next.js does not delete `AGENTS.md` or `CLAUDE.md`.
 
 `experimental.agentFeedback` and top-level [`agentRules`](/docs/app/api-reference/config/next-config-js/agentRules) work independently. Changing one option does not affect the other.
 

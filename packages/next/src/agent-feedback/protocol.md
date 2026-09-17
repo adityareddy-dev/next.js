@@ -1,24 +1,24 @@
 # Next.js agent feedback protocol
 
-Use this protocol only when an approved Next.js entry point instructs you to prepare agent feedback. Approved entry points include a managed `AGENTS.md` or `CLAUDE.md` block, a Next.js Skill, or a Next.js upgrade workflow that links to this file. Prepare reports for the user to review, but never submit them for the user.
+Use this protocol only when the managed Next.js feedback block in `AGENTS.md` or `CLAUDE.md` instructs you to prepare agent feedback. Next.js Skills and upgrade workflows may add candidates to the shared task queue only while that managed block is present. Prepare reports for the user to review, but never submit them for the user.
 
 ## Decide whether to prepare a report
 
-Prepare at most one report per task when Next.js-specific friction causes unexpected framework behavior, a documentation mismatch, a misleading error, repeated failed approaches, or a non-obvious workaround. The issue does not need to block the task, but it should require a meaningful detour or be likely to recur.
+Prepare a separate report for each distinct Next.js friction point that causes unexpected framework behavior, a documentation mismatch, a misleading error, repeated failed approaches, or a non-obvious workaround. An issue does not need to block the task, but it should require a meaningful detour or be likely to recur.
 
-Do not report routine first-pass debugging, vague task scope, problems caused by unverified changes, or issues resolved immediately by following existing guidance. If several issues qualify, choose the most actionable one.
+Do not report routine first-pass debugging, vague task scope, problems caused by unverified changes, or issues resolved immediately by following existing guidance. Keep unrelated issues in separate reports.
 
 ## Defer review until a stopping point
 
 Do not interrupt an active workflow when friction first qualifies. Retain each distinct set of bounded, de-identified candidate facts in the current task context, then continue the work.
 
-If this protocol was reached from a Skill inside a larger task, keep the candidates in the current task context and continue the larger task. Prepare the review only at the final stopping point of the overall user task. For example, verification performed while preparing a pull request should wait until the pull request work is complete.
+If a candidate originated in a Skill inside a larger task, keep it in the current task context and continue the larger task. Prepare the review only at the final stopping point of the overall user task. For example, verification performed while preparing a pull request should wait until the pull request work is complete.
 
-Multiple entry points in the same task share one feedback decision. Run the instruction command at most once per task, even when a managed instruction, Skill, and upgrade workflow all apply. Do not open duplicate reviews.
+The managed feedback block owns one feedback pass for the task. Run the instruction command at most once, even when a Skill or upgrade workflow added candidates to the queue. Do not open duplicate reviews.
 
-The current review form accepts one report. If several candidates qualify before the stopping point, prepare only the most actionable one. Do not combine unrelated problems into one report. A future local queue may present multiple independent reports in one review, but it must not transmit drafts before the user explicitly sends them.
+Each review form accepts one report. If several candidates qualify before the stopping point, prepare and open one separate review tab for each candidate. After opening all review tabs, clear the retained candidate queue from the task context and mark the feedback pass complete. The user owns the open tabs; do not close or recreate them. Nothing is transmitted before the user explicitly sends a report.
 
-## Prepare one report
+## Prepare each report
 
 - **Scope:** Report one observed Next.js behavior. Do not combine separate problems or infer a root cause.
 - **Trigger:** Set `triggerReason` to `unexpected-behavior`, `documentation-mismatch`, `misleading-error`, `repeated-failed-approach`, or `non-obvious-workaround`. Choose the single reason that caused the report.
@@ -63,10 +63,10 @@ Create a schema version 5 payload using only useful evidence. Always include `ne
 
 ## Open the review form
 
-Open the following URL in the user's browser. Replace `<encoded-json>` with the encoded payload.
+For each report, open the following URL in a separate browser tab. Replace `<encoded-json>` with the encoded payload.
 
 ```text
 https://nextjs.org/agent-feedback?token=1g55OW5eIE0qPTgu6RaxeigvyUd65TCqGT3y08L8#report=<encoded-json>
 ```
 
-Do not ask for permission before opening the review form. Opening the form does not send feedback. Continue the current task, mention the prepared report in the next progress update, and never submit the report for the user.
+Do not ask for permission before opening the review forms. Opening a form does not send feedback. Once every form is open, clear the retained friction candidates from the task context. Continue the current task, mention the prepared reports in the next progress update, and never submit or close a report for the user.

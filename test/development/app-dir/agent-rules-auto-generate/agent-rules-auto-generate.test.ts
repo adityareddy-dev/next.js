@@ -225,12 +225,10 @@ describe('agent-feedback auto-generate on next dev (enabled)', () => {
     expect(content).toContain(AGENT_RULES_MARKER)
     expect(content).toContain(AGENT_FEEDBACK_MARKER)
     expect(content).toContain('meaningful detour or are likely to recur')
-    expect(content).toContain(
-      'crash, hang, out-of-memory failure, or unexpected slowdown'
-    )
-    expect(content).toContain('CLI, codemod, Skill, or upgrade workflow')
+    expect(content).toContain('Crashes, hangs, OOMs, or unexpected slowness')
+    expect(content).toContain('CLI, codemod, Skill, or upgrade behavior')
     expect(content).toContain('npx next internal agent-feedback-instructions')
-    expect(content).toContain('once unless it has already run in this task')
+    expect(content).toContain('once per task')
     expect(content).not.toContain('"schemaVersion":3')
   })
 
@@ -373,5 +371,60 @@ describe('agent-feedback auto-generate on next dev (disabled)', () => {
     expect(content).toContain('Keep this content.')
     expect(content).toContain(AGENT_RULES_MARKER)
     expect(content).not.toContain(AGENT_FEEDBACK_MARKER)
+  })
+})
+
+describe('agent-rules auto-generate on next dev (disabled with existing blocks)', () => {
+  const { next } = nextTestSetup({
+    files: __dirname,
+    env: {
+      AI_AGENT: '',
+      CURSOR_TRACE_ID: '',
+      CURSOR_AGENT: '',
+      GEMINI_CLI: '',
+      CODEX_SANDBOX: '',
+      CODEX_CI: '',
+      CODEX_THREAD_ID: '',
+      ANTIGRAVITY_AGENT: '',
+      AUGMENT_AGENT: '',
+      OPENCODE_CLIENT: '',
+      CLAUDECODE: '',
+      CLAUDE_CODE: '',
+      REPL_ID: '',
+      COPILOT_MODEL: '',
+      COPILOT_ALLOW_ALL: '',
+      COPILOT_GITHUB_TOKEN: '',
+    },
+    nextConfig: {
+      agentRules: false,
+      experimental: {
+        agentFeedback: true,
+      },
+    },
+    skipStart: true,
+  })
+
+  beforeAll(async () => {
+    await next.patchFile(
+      'AGENTS.md',
+      `# Team rules\n\nKeep this content.\n\n${currentAgentRulesBlock()}\n\n${currentAgentFeedbackBlock()}\n`
+    )
+    await next.patchFile('CLAUDE.md', `${currentAgentRulesBlock()}\n`)
+    await next.start()
+  })
+
+  it('removes only the managed rules block without a detected agent', async () => {
+    await next.fetch('/')
+    const content = fs.readFileSync(
+      path.join(next.testDir, 'AGENTS.md'),
+      'utf-8'
+    )
+    expect(content).toContain('Keep this content.')
+    expect(content).not.toContain(AGENT_RULES_MARKER)
+    expect(content).toContain(AGENT_FEEDBACK_MARKER)
+    expect(fs.existsSync(path.join(next.testDir, 'CLAUDE.md'))).toBe(true)
+    expect(fs.readFileSync(path.join(next.testDir, 'CLAUDE.md'), 'utf-8')).toBe(
+      ''
+    )
   })
 })

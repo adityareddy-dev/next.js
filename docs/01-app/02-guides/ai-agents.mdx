@@ -78,7 +78,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 @AGENTS.md
 ```
 
-Next.js updates only the content between the agent rules markers and preserves the rest of the file. Set `agentRules` to `false` to stop creating or updating the block. An existing agent rules block remains in the file.
+Next.js updates only the content between the agent rules markers and preserves the rest of the file. Set `agentRules` to `false` to remove the managed block the next time you run `next dev`.
 
 [Benchmark results on nextjs.org/evals](https://nextjs.org/evals) show that agents perform better when they read the bundled docs. See the [`agentRules` API reference](/docs/app/api-reference/config/next-config-js/agentRules) to disable generated instructions.
 
@@ -93,18 +93,16 @@ The feedback instructions use a separate managed block:
 
 # Report Next.js feedback
 
-As you work, keep track of de-identified Next.js issues that cause a meaningful detour or are likely to recur, including:
+During the task, queue de-identified Next.js issues that cause a meaningful detour or are likely to recur, such as:
 
-- A dev server, build, or runtime crash, hang, out-of-memory failure, or unexpected slowdown
-- Incorrect or inconsistent framework behavior or output
+- Crashes, hangs, OOMs, or unexpected slowness in development, builds, or runtime
+- Incorrect behavior or output, misleading errors, or missing diagnostics
 - Missing, unclear, or conflicting documentation
-- A misleading error or missing diagnostic
-- A Next.js CLI, codemod, Skill, or upgrade workflow that behaves unexpectedly
-- Repeated failed approaches or a non-obvious workaround
+- Unexpected CLI, codemod, Skill, or upgrade behavior, repeated failures, or non-obvious workarounds
 
-Do not interrupt the task to report an issue. Ignore routine first-pass debugging and issues caused by unverified changes. Do not retain source code, logs, file paths, URLs, secrets, personal information, or project-specific data.
+Continue the task without reporting immediately. Ignore routine debugging and issues caused by unverified changes. Never retain source code, logs, paths, URLs, secrets, personal information, or project-specific data.
 
-At the final stopping point of the overall user task, run `npx next internal agent-feedback-instructions` once unless it has already run in this task. Follow any instructions it returns; if it returns nothing, continue without reporting.
+At the final stopping point, run `npx next internal agent-feedback-instructions` once per task and follow any instructions returned. If it returns nothing, continue without reporting.
 
 <!-- END:nextjs-agent-feedback -->
 ```
