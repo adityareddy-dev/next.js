@@ -60,7 +60,7 @@ npx create-next-app@canary --no-agents-md
 
 ### Agent rules
 
-On Next.js 16.3 or later, [`agentRules`](/docs/app/api-reference/config/next-config-js/agentRules) is enabled by default. When `next dev` detects an AI coding agent, Next.js creates or updates managed documentation instructions in `AGENTS.md` or `CLAUDE.md` at the project root:
+[`agentRules`](/docs/app/api-reference/config/next-config-js/agentRules) keeps AI coding agents aligned with your installed Next.js version by directing them to the bundled docs. Next.js writes the following managed instructions to `AGENTS.md` or `CLAUDE.md` at the project root:
 
 ```md filename="AGENTS.md"
 <!-- BEGIN:nextjs-agent-rules -->
@@ -78,7 +78,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 @AGENTS.md
 ```
 
-Next.js updates only the content between the agent rules markers and preserves the rest of the file. Set `agentRules` to `false` to remove the managed block the next time you run `next dev`.
+Next.js updates only the content between the agent rules markers and preserves the rest of the file. The option is enabled by default on Next.js 16.3 or later. Set `agentRules` to `false` to remove the managed block the next time you run `next dev`.
 
 [Benchmark results on nextjs.org/evals](https://nextjs.org/evals) show that agents perform better when they read the bundled docs. See the [`agentRules` API reference](/docs/app/api-reference/config/next-config-js/agentRules) to disable generated instructions.
 
