@@ -1,13 +1,13 @@
 ---
 title: agentFeedback
-description: Learn how to review and submit de-identified Next.js issue reports prepared by AI coding agents.
+description: Enable a review flow for Next.js issue reports prepared by AI coding agents.
 version: experimental
 related:
   links:
     - app/guides/ai-agents
 ---
 
-The experimental `agentFeedback` option enables an opt-in review flow for de-identified Next.js reports prepared by AI coding agents. The option is off by default and works independently from [Next.js Telemetry](/telemetry).
+The `experimental.agentFeedback` option lets AI coding agents prepare Next.js issue reports for you to review. The option is off by default and works independently from [Next.js Telemetry](/telemetry).
 
 ```ts filename="next.config.ts" switcher
 import type { NextConfig } from 'next'
@@ -32,19 +32,19 @@ const nextConfig = {
 module.exports = nextConfig
 ```
 
-## How agent feedback works
+## Review and send agent feedback
 
-When `next dev` detects an AI coding agent, Next.js adds a short managed block to your project's `AGENTS.md` or `CLAUDE.md`. The block lets the agent load version-matched reporting instructions bundled with your installed Next.js version.
+When `next dev` detects an AI coding agent, Next.js adds managed feedback instructions to your project's `AGENTS.md` or `CLAUDE.md`. The agent can then load reporting instructions that match the installed Next.js version.
 
-The protocol tells the agent when to prepare feedback and how to structure one reproducible Next.js report. The agent opens a review form but cannot submit it. You can edit the report, remove individual details, close the form without sending, or select **Send feedback**.
+When an agent identifies a reproducible Next.js issue, it can open a draft report in a review form. You can edit the report, remove details, close the form without sending, or select **Send feedback**. Nothing is sent when the form opens.
 
-Only the reviewed report, agent name, and Next.js version are sent. The form does not attach project files or machine metadata.
+Submitting the form sends the content you reviewed, the agent name, and the Next.js version. The form does not automatically attach project files or machine metadata.
 
 `agentFeedback` works independently from the top-level [`agentRules`](/docs/app/guides/ai-agents#opting-out) option. Changing one option does not affect the other.
 
 ## Disable agent feedback
 
-Set `experimental.agentFeedback` to `false` or remove the option. The next `next dev` run removes only the managed `<!-- BEGIN:nextjs-agent-feedback -->` block. Next.js preserves all other content in `AGENTS.md` and `CLAUDE.md`.
+Set `experimental.agentFeedback` to `false` or remove the option. The next `next dev` run removes only the generated feedback instructions. Next.js preserves all other content in `AGENTS.md` and `CLAUDE.md`.
 
 ## Version History
 
