@@ -1,12 +1,20 @@
 # Next.js agent feedback protocol
 
-Use this protocol only when a managed `AGENTS.md` or `CLAUDE.md` block instructs you to prepare Next.js agent feedback. Prepare the report for the user to review, but never submit it for them.
+Use this protocol only when an approved Next.js entry point instructs you to prepare agent feedback. Approved entry points include a managed `AGENTS.md` or `CLAUDE.md` block, a Next.js Skill, or a Next.js upgrade workflow that links to this file. Prepare reports for the user to review, but never submit them for the user.
 
 ## Decide whether to prepare a report
 
 Prepare at most one report per task when Next.js-specific friction causes unexpected framework behavior, a documentation mismatch, a misleading error, repeated failed approaches, or a non-obvious workaround. The issue does not need to block the task, but it should require a meaningful detour or be likely to recur.
 
 Do not report routine first-pass debugging, vague task scope, problems caused by unverified changes, or issues resolved immediately by following existing guidance. If several issues qualify, choose the most actionable one.
+
+## Defer review until a stopping point
+
+Do not interrupt an active workflow when friction first qualifies. Retain only the bounded, de-identified candidate facts in the current task context, then continue the work.
+
+If this protocol was reached from a Skill nested inside another workflow, return the candidate to the outer workflow. The outermost workflow prepares the review at its natural stopping point. For example, verification performed while preparing a pull request should wait until the pull request work is complete.
+
+The current review form accepts one report. If several candidates qualify before the stopping point, prepare only the most actionable one. Do not combine unrelated problems into one report. A future local queue may present multiple independent reports in one review, but it must not transmit drafts before the user explicitly sends them.
 
 ## Check report availability
 

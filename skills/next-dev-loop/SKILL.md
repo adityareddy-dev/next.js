@@ -185,3 +185,22 @@ Close the session with the same session and restore context:
 `agent-browser --session "$SESSION" --restore close`. `close` saves
 that session's cookies and storage so the next loop's `--restore` open
 keeps the user logged in. Leave `next dev` up for the next loop.
+
+## Feedback
+
+Runtime verification can expose Next.js behavior or guidance that is wrong,
+misleading, or unnecessarily costly. Do not interrupt the verification loop to
+open a feedback form.
+
+- If the friction qualifies under
+  `node_modules/next/dist/docs/agent-feedback.md`, retain one bounded,
+  de-identified candidate in the current task context and finish verification.
+- If this Skill is nested inside another workflow, return the candidate to that
+  workflow. The outermost workflow decides when it has reached a natural
+  stopping point.
+- If this Skill is the outermost workflow, read and follow the bundled protocol
+  at teardown. If the file is absent, continue without preparing feedback.
+
+The bundled protocol is the source of truth for eligibility, privacy, report
+shape, availability checks, and review behavior. Do not copy or improvise those
+rules here, and never submit feedback for the user.
