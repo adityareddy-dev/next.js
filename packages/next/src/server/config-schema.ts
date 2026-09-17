@@ -314,6 +314,7 @@ export const experimentalSchema = {
   proxyTimeout: z.number().gte(0).optional(),
   rootParams: z.boolean().optional(),
   mcpServer: z.boolean().optional(),
+  exposeRuntimeErrorsToHMR: z.boolean().optional(),
   removeUncaughtErrorAndRejectionListeners: z.boolean().optional(),
   validateRSCRequestHeaders: z.boolean().optional(),
   scrollRestoration: z.boolean().optional(),
@@ -375,6 +376,15 @@ export const experimentalSchema = {
   webpackMemoryOptimizations: z.boolean().optional(),
   turbopackMemoryEviction: z
     .union([z.literal(false), z.literal('full'), z.literal('auto')])
+    .optional(),
+  turbopackGc: z
+    .union([
+      z.boolean(),
+      z.strictObject({
+        minProgressMs: z.number().min(0).finite().optional(),
+        rootTtlMs: z.number().min(0).finite().optional(),
+      }),
+    ])
     .optional(),
   turbopackPluginRuntimeStrategy: z
     .enum(['workerThreads', 'childProcesses', 'forceWorkerThreads'])
