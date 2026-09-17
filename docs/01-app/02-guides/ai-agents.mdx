@@ -84,7 +84,7 @@ Next.js updates only the content between the agent rules markers and preserves t
 
 ### Agent feedback
 
-Experimental [`agentFeedback`](/docs/app/api-reference/config/next-config-js/agentFeedback) is disabled by default. When enabled and `next dev` detects an AI coding agent, Next.js creates or updates managed feedback instructions in `AGENTS.md` or `CLAUDE.md` at the project root. Agent feedback is separate from [Next.js Telemetry](/telemetry).
+Agent feedback lets AI coding agents keep track of de-identified Next.js issues while they work and prepare them for your review at the end of the task. Each report opens in a review form where you can edit or remove details before choosing whether to send it. Agent feedback is separate from [Next.js Telemetry](/telemetry).
 
 The feedback instructions use a separate managed block:
 
@@ -108,8 +108,6 @@ At the final stopping point, run `npx next internal agent-feedback-instructions`
 ```
 
 Next.js updates only the content between the agent feedback markers and preserves the rest of the file. Disabling or removing `experimental.agentFeedback` removes the existing feedback block the next time you run `next dev`.
-
-When an agent prepares a report, it opens in a review form. Nothing is sent until you select **Send feedback**. You can edit or remove details, or close the form without sending.
 
 ### For earlier versions
 
