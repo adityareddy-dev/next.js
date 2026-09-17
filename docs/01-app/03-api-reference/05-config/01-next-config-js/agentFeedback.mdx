@@ -5,11 +5,12 @@ version: experimental
 related:
   links:
     - app/guides/ai-agents
+    - app/api-reference/config/next-config-js/agentRules
 ---
 
 The `experimental.agentFeedback` option lets AI coding agents prepare Next.js issue reports for you to review. The option is off by default and works independently from [Next.js Telemetry](/telemetry).
 
-```ts filename="next.config.ts" switcher
+```ts filename="next.config.ts" switcher highlight={5}
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
@@ -21,7 +22,7 @@ const nextConfig: NextConfig = {
 export default nextConfig
 ```
 
-```js filename="next.config.js" switcher
+```js filename="next.config.js" switcher highlight={4}
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
@@ -60,7 +61,7 @@ When an agent identifies a reproducible Next.js issue, it can open a draft repor
 
 Submitting the form sends the content you reviewed, the agent name, and the Next.js version. The form does not automatically attach project files or machine metadata.
 
-`agentFeedback` works independently from the top-level [`agentRules`](/docs/app/guides/ai-agents#agent-rules) option. Changing one option does not affect the other.
+`agentFeedback` works independently from the top-level [`agentRules`](/docs/app/api-reference/config/next-config-js/agentRules) option. Changing one option does not affect the other.
 
 ## Disable agent feedback
 
