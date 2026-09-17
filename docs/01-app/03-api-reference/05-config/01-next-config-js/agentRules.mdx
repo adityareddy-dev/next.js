@@ -7,7 +7,7 @@ related:
     - app/api-reference/config/next-config-js/agentFeedback
 ---
 
-The `agentRules` option controls whether `next dev` creates and updates version-matched instructions for detected AI coding agents. The option is enabled by default.
+The `agentRules` option controls whether `next dev` creates and updates version-matched documentation instructions for detected AI coding agents. It is enabled by default.
 
 Set `agentRules` to `false` to disable this behavior:
 
@@ -58,11 +58,11 @@ If either file already exists, Next.js adds the managed block to that file witho
 
 ## Disable agent rules
 
-Setting `agentRules` to `false` prevents `next dev` from creating or updating the managed block. It does not remove a block that already exists.
+Set `agentRules` to `false` to stop `next dev` from creating or updating the managed block. Next.js does not remove an existing agent rules block.
 
 To prevent [`create-next-app`](/docs/app/api-reference/cli/create-next-app) from creating agent files in a new project, pass the `--no-agents-md` option.
 
-`agentRules` works independently from the experimental [`agentFeedback`](/docs/app/api-reference/config/next-config-js/agentFeedback) option. Changing one option does not affect the other.
+`agentRules` and [`experimental.agentFeedback`](/docs/app/api-reference/config/next-config-js/agentFeedback) work independently. Changing one option does not affect the other.
 
 ## Version History
 

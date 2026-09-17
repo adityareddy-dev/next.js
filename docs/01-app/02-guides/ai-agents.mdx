@@ -60,7 +60,7 @@ npx create-next-app@canary --no-agents-md
 
 ### Agent rules
 
-On Next.js 16.3 or later, the [`agentRules`](/docs/app/api-reference/config/next-config-js/agentRules) option is enabled by default. When you run `next dev` with an AI coding agent, Next.js creates or updates managed instructions in `AGENTS.md` or `CLAUDE.md` at the project root:
+On Next.js 16.3 or later, [`agentRules`](/docs/app/api-reference/config/next-config-js/agentRules) is enabled by default. When `next dev` detects an AI coding agent, Next.js creates or updates managed documentation instructions in `AGENTS.md` or `CLAUDE.md` at the project root:
 
 ```md filename="AGENTS.md"
 <!-- BEGIN:nextjs-agent-rules -->
@@ -78,15 +78,15 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 @AGENTS.md
 ```
 
-Add your own project-specific instructions outside the `<!-- BEGIN:nextjs-agent-rules -->` and `<!-- END:nextjs-agent-rules -->` markers, and they're preserved when Next.js updates the managed block.
+Next.js updates only the content between the agent rules markers and preserves the rest of the file. Set `agentRules` to `false` to stop creating or updating the block. An existing agent rules block remains in the file.
 
 [Benchmark results on nextjs.org/evals](https://nextjs.org/evals) show that agents perform better when they read the bundled docs. See the [`agentRules` API reference](/docs/app/api-reference/config/next-config-js/agentRules) to disable generated instructions.
 
 ### Agent feedback
 
-The experimental [`agentFeedback`](/docs/app/api-reference/config/next-config-js/agentFeedback) option lets detected AI coding agents prepare Next.js issue reports for your review. It is off by default and separate from [Next.js Telemetry](/telemetry).
+Experimental [`agentFeedback`](/docs/app/api-reference/config/next-config-js/agentFeedback) is disabled by default. When enabled and `next dev` detects an AI coding agent, Next.js creates or updates managed feedback instructions in `AGENTS.md` or `CLAUDE.md` at the project root. Agent feedback is separate from [Next.js Telemetry](/telemetry).
 
-When enabled and an AI coding agent is detected, `next dev` adds a separate managed block to `AGENTS.md` or `CLAUDE.md`:
+The feedback instructions use a separate managed block:
 
 ```md filename="AGENTS.md"
 <!-- BEGIN:nextjs-agent-feedback -->
@@ -109,7 +109,9 @@ At the final stopping point of the overall user task, run `npx next internal age
 <!-- END:nextjs-agent-feedback -->
 ```
 
-Next.js preserves content outside the managed block. When an agent prepares a report, it opens in a review form. Nothing is sent until you select **Send feedback**. You can edit or remove details, or close the form without sending.
+Next.js updates only the content between the agent feedback markers and preserves the rest of the file. Disabling or removing `experimental.agentFeedback` removes the existing feedback block the next time you run `next dev`.
+
+When an agent prepares a report, it opens in a review form. Nothing is sent until you select **Send feedback**. You can edit or remove details, or close the form without sending.
 
 ### For earlier versions
 

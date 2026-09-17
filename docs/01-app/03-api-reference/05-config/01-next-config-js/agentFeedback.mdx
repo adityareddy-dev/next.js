@@ -8,7 +8,9 @@ related:
     - app/api-reference/config/next-config-js/agentRules
 ---
 
-The `experimental.agentFeedback` option lets AI coding agents prepare Next.js issue reports for you to review. The option is off by default and works independently from [Next.js Telemetry](/telemetry).
+The `experimental.agentFeedback` option controls whether `next dev` creates and updates instructions that let detected AI coding agents prepare Next.js issue reports for your review. It is disabled by default and works independently from [Next.js Telemetry](/telemetry).
+
+Set `experimental.agentFeedback` to `true` to enable this behavior:
 
 ```ts filename="next.config.ts" switcher highlight={5}
 import type { NextConfig } from 'next'
@@ -35,7 +37,7 @@ module.exports = nextConfig
 
 ## Generated agent instructions
 
-When the option is enabled and `next dev` detects an AI coding agent, Next.js creates or updates this managed block in `AGENTS.md` or `CLAUDE.md`:
+When `experimental.agentFeedback` is enabled and `next dev` detects an AI coding agent, Next.js creates or updates this managed block in `AGENTS.md` or `CLAUDE.md`:
 
 ```md filename="AGENTS.md"
 <!-- BEGIN:nextjs-agent-feedback -->
@@ -58,7 +60,15 @@ At the final stopping point of the overall user task, run `npx next internal age
 <!-- END:nextjs-agent-feedback -->
 ```
 
-Next.js updates only the content between the feedback markers and preserves the rest of the file. When agent rules and agent feedback are both enabled, Next.js keeps both managed blocks in the same file.
+Next.js updates only the content between the markers and preserves the rest of the file.
+
+If neither agent file exists, Next.js creates `AGENTS.md` and a `CLAUDE.md` file that imports it:
+
+```md filename="CLAUDE.md"
+@AGENTS.md
+```
+
+If either file already exists, Next.js adds the managed block to that file without creating another agent file. When agent rules and agent feedback are both enabled, Next.js keeps both managed blocks in the same file.
 
 ## Review and send agent feedback
 
@@ -70,11 +80,11 @@ When an agent identifies a reproducible Next.js issue, it can open a draft repor
 
 Submitting the form sends the content you reviewed, the agent name, and the Next.js version. The form does not automatically attach project files or machine metadata.
 
-`agentFeedback` works independently from the top-level [`agentRules`](/docs/app/api-reference/config/next-config-js/agentRules) option. Changing one option does not affect the other.
-
 ## Disable agent feedback
 
-Set `experimental.agentFeedback` to `false` or remove the option. The next `next dev` run removes only the generated feedback instructions. Next.js preserves all other content in `AGENTS.md` and `CLAUDE.md`.
+Set `experimental.agentFeedback` to `false` or remove the option to stop `next dev` from creating or updating the managed block. The next `next dev` run removes the existing agent feedback block and preserves all other content in `AGENTS.md` and `CLAUDE.md`.
+
+`experimental.agentFeedback` and top-level [`agentRules`](/docs/app/api-reference/config/next-config-js/agentRules) work independently. Changing one option does not affect the other.
 
 ## Version History
 
