@@ -1,4 +1,4 @@
-use std::{cell::RefCell, mem::MaybeUninit, rc::Rc, slice, sync::Arc};
+use std::{cell::RefCell, mem::MaybeUninit, rc::Rc, sync::Arc};
 
 use anyhow::{Context, Result, ensure};
 use lz4_flex::block::{
@@ -28,40 +28,18 @@ thread_local! {
     );
 }
 
-/// Decompresses `block` into `dest`, verifying the output length matches `expected_len`.
-fn decompress_block(
-    compression: Compression,
-    block: &[u8],
-    dest: &mut [u8],
-    expected_len: u32,
-) -> Result<()> {
-    debug_assert!(
-        expected_len > 0,
-        "decompress_block called with uncompressed_length=0; uncompressed blocks should use \
-         zero-copy mmap path"
-    );
-    let bytes_written = match compression {
-        Compression::Lz4 => decompress_into(block, dest).map_err(anyhow::Error::from),
-        Compression::Zstd3 => ZSTD_DECOMPRESSOR.with_borrow_mut(|decompressor| {
-            decompressor
-                .decompress_to_buffer(block, dest)
-                .map_err(anyhow::Error::from)
-        }),
+enum DecompressionTarget<'a> {
+    Lz4(&'a mut [u8]),
+    Zstd(&'a mut [MaybeUninit<u8>]),
+}
+
+impl DecompressionTarget<'_> {
+    fn compression(&self) -> Compression {
+        match self {
+            DecompressionTarget::Lz4(_) => Compression::Lz4,
+            DecompressionTarget::Zstd(_) => Compression::Zstd3,
+        }
     }
-    .with_context(|| {
-        format!(
-            "Failed to decompress {compression:?} block ({} bytes compressed, {} bytes \
-             uncompressed)",
-            block.len(),
-            expected_len
-        )
-    })?;
-    ensure!(
-        bytes_written == expected_len as usize,
-        "Decompressed length does not match expected length: decompressed {bytes_written} bytes, \
-         expected {expected_len}"
-    );
-    Ok(())
 }
 
 /// A Zstd output buffer that keeps its allocation uninitialized until the codec reports which
@@ -86,7 +64,7 @@ unsafe impl zstd::zstd_safe::WriteBuf for ZstdUninitBuffer<'_> {
     fn as_slice(&self) -> &[u8] {
         // Safety: `initialized` is updated only by `filled_until`, whose caller guarantees that
         // this prefix was written, and it is always at most the allocation length.
-        unsafe { slice::from_raw_parts(self.buffer.as_ptr().cast(), self.initialized) }
+        unsafe { self.buffer[..self.initialized].assume_init_ref() }
     }
 
     fn capacity(&self) -> usize {
@@ -103,29 +81,34 @@ unsafe impl zstd::zstd_safe::WriteBuf for ZstdUninitBuffer<'_> {
     }
 }
 
-fn decompress_zstd_block(
+/// Decompresses `block` into `dest`, verifying the output length matches `expected_len`.
+fn decompress_block(
     block: &[u8],
-    dest: &mut ZstdUninitBuffer<'_>,
+    mut dest: DecompressionTarget<'_>,
     expected_len: u32,
 ) -> Result<()> {
     debug_assert!(
         expected_len > 0,
-        "decompress_zstd_block called with uncompressed_length=0; uncompressed blocks should use \
+        "decompress_block called with uncompressed_length=0; uncompressed blocks should use \
          zero-copy mmap path"
     );
-    let bytes_written = ZSTD_DECOMPRESSOR
-        .with_borrow_mut(|decompressor| {
+    let compression = dest.compression();
+    let bytes_written = match &mut dest {
+        DecompressionTarget::Lz4(dest) => decompress_into(block, dest).map_err(anyhow::Error::from),
+        DecompressionTarget::Zstd(dest) => ZSTD_DECOMPRESSOR.with_borrow_mut(|decompressor| {
             decompressor
-                .decompress_to_buffer(block, dest)
+                .decompress_to_buffer(block, &mut ZstdUninitBuffer::new(dest))
                 .map_err(anyhow::Error::from)
-        })
-        .with_context(|| {
-            format!(
-                "Failed to decompress Zstd3 block ({} bytes compressed, {} bytes uncompressed)",
-                block.len(),
-                expected_len
-            )
-        })?;
+        }),
+    }
+    .with_context(|| {
+        format!(
+            "Failed to decompress {compression:?} block ({} bytes compressed, {} bytes \
+             uncompressed)",
+            block.len(),
+            expected_len
+        )
+    })?;
     ensure!(
         bytes_written == expected_len as usize,
         "Decompressed length does not match expected length: decompressed {bytes_written} bytes, \
@@ -148,9 +131,9 @@ pub(crate) fn decompress_into_arc(
         let mut buffer = buffer;
         // We just created this Arc, so its refcount is 1 and `get_mut` always succeeds.
         let dest = Arc::get_mut(&mut buffer).expect("Arc refcount should be 1");
-        decompress_zstd_block(block, &mut ZstdUninitBuffer::new(dest), uncompressed_length)?;
+        decompress_block(block, DecompressionTarget::Zstd(dest), uncompressed_length)?;
         // Safety: successful Zstd decompression reported that it initialized exactly the full
-        // allocation; `decompress_zstd_block` checked that before returning.
+        // allocation; `decompress_block` checked that before returning.
         return Ok(unsafe { buffer.assume_init() });
     }
 
@@ -159,7 +142,7 @@ pub(crate) fn decompress_into_arc(
     let mut buffer = unsafe { buffer.assume_init() };
     // We just created this Arc so refcount is 1; get_mut always succeeds.
     let dest = Arc::get_mut(&mut buffer).expect("Arc refcount should be 1");
-    decompress_block(compression, block, dest, uncompressed_length)?;
+    decompress_block(block, DecompressionTarget::Lz4(dest), uncompressed_length)?;
     Ok(buffer)
 }
 
@@ -173,9 +156,9 @@ pub(crate) fn decompress_into_rc(
     if compression == Compression::Zstd3 {
         let mut buffer = buffer;
         let dest = Rc::get_mut(&mut buffer).expect("Rc refcount should be 1");
-        decompress_zstd_block(block, &mut ZstdUninitBuffer::new(dest), uncompressed_length)?;
+        decompress_block(block, DecompressionTarget::Zstd(dest), uncompressed_length)?;
         // Safety: successful Zstd decompression reported that it initialized exactly the full
-        // allocation; `decompress_zstd_block` checked that before returning.
+        // allocation; `decompress_block` checked that before returning.
         return Ok(unsafe { buffer.assume_init() });
     }
 
@@ -183,7 +166,7 @@ pub(crate) fn decompress_into_rc(
     // decompress_block).
     let mut buffer = unsafe { buffer.assume_init() };
     let dest = Rc::get_mut(&mut buffer).expect("Rc refcount should be 1");
-    decompress_block(compression, block, dest, uncompressed_length)?;
+    decompress_block(block, DecompressionTarget::Lz4(dest), uncompressed_length)?;
     Ok(buffer)
 }
 
